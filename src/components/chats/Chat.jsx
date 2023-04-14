@@ -30,12 +30,14 @@ const Chat = () => {
     canvas.height = 240;
     const context = canvas.getContext('2d');
     context.drawImage(document.querySelector('video'), 0, 0, canvas.width, canvas.height);
+    console.log(canvas.toDataURL('image/png', 0.5));
     setImage(canvas);
-    setNewImage(image)
+
+    setNewImage(canvas.toDataURL())
     // setImage(null)
   };
 
-
+  console.log(newImage);
   const fileSelect = useRef()
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
