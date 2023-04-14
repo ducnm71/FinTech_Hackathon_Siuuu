@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import { useNavigate } from "react-router-dom";
 const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
@@ -23,8 +25,9 @@ const Ai = () => {
   const [text, setText] = useState("");
   const [option, setOption] = useState(false)
   const [chats, setChats] = useState([])
-  const { currentUser } = useContext(AuthContext);
-
+  const { currentUser} = useContext(AuthContext);
+  const { data, dispatch } = useContext(ChatContext);
+  console.log(currentUser);
   useEffect(() => {
     const getChats = () => {
       // console.log(currentUser + 'haha');
@@ -115,6 +118,11 @@ const Ai = () => {
       });
   }
 
+  const handleChangeUser = (u) => {
+    dispatch({ type: "CHANGE_USER_PAYMENT", payload: u })
+  };
+
+
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
     console.log(messages);
@@ -135,7 +143,7 @@ const Ai = () => {
           <li>Người dùng trong danh bạ</li>
         { chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
                 return (
-                  <li className="aside__item">
+                  <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
                     <img src={chat[1].userInfo?.photoURL} alt="" />
                     <p>{chat[1].userInfo?.displayName}</p>
                   </li>
@@ -150,12 +158,17 @@ const Ai = () => {
       sender: 'ChatGPT'
     }])
   }
-  
+
   const handleCopy = () => {
     setTimeout(() => {
       setCopy(true);
     }, 1000);
   };
+  const navigate = useNavigate()
+  const handleNavigate = (user) => {
+    handleChangeUser(user)
+    navigate('/')
+  }
 
   return (
     <SAi>

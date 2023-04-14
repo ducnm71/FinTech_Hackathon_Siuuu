@@ -19,7 +19,7 @@ const Chat = () => {
 
   const [link, setLink] = useState(false)
 
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(data.payment)
 
   const fileSelect = useRef()
   useEffect(() => {
