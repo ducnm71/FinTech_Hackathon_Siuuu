@@ -94,6 +94,7 @@ const Aside = () => {
 
   const handleChangeUser = (u) => {
     dispatch({ type: "CHANGE_USER", payload: u })
+    console.log();
   };
 
   return (

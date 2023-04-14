@@ -19,7 +19,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
 
   const [link, setLink] = useState(false)
-  const [show, setShow] = useState(false)
+  const [show, setShow] = useState(data.payment)
   const [image, setImage] = useState(null);
   const [confirm, setConfirm] = useState(false)
   const [newImage, setNewImage] = useState(null)
@@ -34,6 +34,7 @@ const Chat = () => {
     setNewImage(image)
     // setImage(null)
   };
+
 
   const fileSelect = useRef()
   useEffect(() => {
