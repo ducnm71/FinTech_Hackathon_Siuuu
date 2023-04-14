@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import SideBarAI from "./sideBarAI";
 import styled from "styled-components";
-import code1 from "../../image/chat-bot/code1.png";
-import code2 from "../../image/chat-bot/code2.png";
-import code3 from "../../image/chat-bot/code3.png";
-import code4 from "../../image/chat-bot/code4.png";
-import code5 from "../../image/chat-bot/code5.png";
-import code6 from "../../image/chat-bot/code6.png";
-import { set } from "lodash";
-import { message } from "antd";
-const API_KEY = "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"
+
+const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",
