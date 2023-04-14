@@ -182,9 +182,20 @@
           border-radius: 50%;
           background: #e2e8f0;
         }
+        .modal-footer{
+          .total{
+            display: flex;
+            gap: 2rem;
+            position: absolute;
+            left: 10%;
+            top: 90%;
+          }
+        }
         .modal-body{
           display: flex;
           flex-direction: column;
+          justify-content: center;
+          align-items: center;
           gap: 1.5rem;
           .remainder{
             display: flex;
@@ -194,20 +205,30 @@
               margin-bottom: 3px;
             }
           }
+          .bill{
+            display: flex;
+            gap: 10rem;
+            p{
+              font-size: 20px;
+            }
+          }
           .item{
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 1rem;
             
             input{
               border-radius: 10px;
               padding-left: 20px;
               font-size: 20px;
+              width: 150%;
             }
             textarea{
               border-radius: 10px;
               padding-left: 20px;
               font-size: 20px;
+              width: 150%;
             }
           }
         }

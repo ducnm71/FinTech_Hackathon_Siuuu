@@ -4,10 +4,11 @@ import Message from '../message/Message'
 import { ChatContext } from '../../context/ChatContext'
 import { Timestamp, arrayUnion, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase/config'
-import { message } from 'antd'
 import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
+import Camera from '../camera/Camera'
+import Canvas from '../canvas/Canvas'
 
 
 const Chat = () => {
@@ -18,8 +19,21 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
 
   const [link, setLink] = useState(false)
-
   const [show, setShow] = useState(false)
+  const [image, setImage] = useState(null);
+  const [confirm, setConfirm] = useState(false)
+  const [newImage, setNewImage] = useState(null)
+
+  const handleCapture = async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const context = canvas.getContext('2d');
+    context.drawImage(document.querySelector('video'), 0, 0, canvas.width, canvas.height);
+    setImage(canvas);
+    setNewImage(image)
+    // setImage(null)
+  };
 
   const fileSelect = useRef()
   useEffect(() => {
@@ -162,41 +176,115 @@ const Chat = () => {
                   {
                     link ?
                     <>
-                      <div class="modal-body">
-
-                      <div className='remainder'>
-                        <h5>
-                          Remainder: 
-                        </h5>
-                        <p>1.000.000 VND</p>
-                      </div>
-
-                      <div className="item">
-                        <input placeholder='Amount' type='text' required />
-                        <textarea placeholder='Transfer Content'/>
-                      </div>
+                    {
+                      !confirm?
+                      <>
                       
-                      </div>
+                        <div class="modal-body">
+
+                        <div className='remainder'>
+                          <h5>
+                            Remainder: 
+                          </h5>
+                          <p>1.000.000 VND</p>
+                        </div>
+
+                        <div className="item">
+                          <input placeholder='Amount' type='text' required />
+                          <textarea placeholder='Transfer Content'/>
+                        </div>
+                        
+                        </div>
+                        <div class="modal-footer">
+                          <button onClick={() => {
+                            setLink(!link)
+                            setShow(!show)}} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" onClick={() => setConfirm(!confirm)} class="btn btn-primary" id="upload" 
+                          >Transfer</button>
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div class="modal-body">
+
+                        <div className='remainder'>
+
+                        </div>
+
+                        <table className='table table-striped'>
+
+                            <tbody>
+                              <tr>
+                                <th scope="row">Source account</th>
+                                <td>0012030000</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Target account</th>
+                                <td>1222224249</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Beneficiary</th>
+                                <td>Anh Hoang</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Amount</th>
+                                <td>100.000</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Fee transfer</th>
+                                <td>0</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Content</th>
+                                <td>Hehe</td>
+                              </tr>
+                            </tbody>
+
+                            
+                        </table>
+                        
+                        </div>
+                        <div class="modal-footer">
+                          <div className='total'>
+                              <p>Total</p>
+                              <p>100.000</p>
+                          </div>
+                          <button onClick={() => {
+                            setConfirm(!confirm)
+                            }} type="button" class="btn btn-secondary">Back</button>
+                          <button type="button" class="btn btn-primary" id="upload" 
+                          >Confirm</button>
+                        </div>
+                      </>
+                    }
+                      
                     </>
                     :
                     <>
                     <div class="modal-body">
                       <h5>You have not linked your Viettel Money account!</h5>
                       <div className="item">
-                        <input placeholder='Your account number' required/>
-                        <input placeholder='Recieving account'/>
-                        <input placeholder='Amount' type='text' required />
-                        <textarea placeholder='Transfer Content'/>
+                        <input placeholder='Your account number' style={{width: '100%'}} required/>
+                        <Camera />
+                        <button style={{width:'160px', height:'40px', border: 'none', borderRadius:'5px', backgroundColor: '#007bff', color: 'white'}}  onClick={handleCapture}>Take Register Photo</button>
+                        <Canvas image={image} />
+                        
+                        
                       </div>
                     </div>
+                    <div class="modal-footer">
+                      <button onClick={() => {
+                        setImage(null)
+                        setShow(!show)}} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="upload" 
+                      onClick={() =>  {
+                        setImage(null)
+                        setLink(!link)}}
+                      >Transfer</button>
+                  </div>
                     </>
                   }
-                  <div class="modal-footer">
-                    <button onClick={() => setShow(!show)} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="upload" 
-                    // onClick={handleUpload}
-                    >Transfer</button>
-                  </div>
+                  
                 </div>
               </div>
             </div>
