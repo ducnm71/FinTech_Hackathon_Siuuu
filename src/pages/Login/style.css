@@ -1,0 +1,18 @@
+@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
+
+
+.login-body * {
+  box-sizing: border-box;
+}
+
+.login-body {
+  background: #f6f5f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: "Montserrat", sans-serif;
+  width: 100%;
+  height: 100vh;
+  background-image: linear-gradient(gainsboro, #3cb4e7);
+}

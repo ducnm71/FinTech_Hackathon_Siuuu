@@ -1,0 +1,220 @@
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  // overflow: auto;
+  &__top {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #dbeafe;
+    .icon-prev {
+      display: none;
+    }
+
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      .image {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .content {
+        h6 {
+          margin: 0;
+          font-size: 16px;
+          color: #64748b;
+        }
+        span {
+          font-size: 10px;
+          color: #94a3b8;
+        }
+      }
+    }
+    &-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      justify-content: flex-end;
+      li {
+        
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          padding: 8px 0;
+          border: none;
+          border-radius: 10px;
+          background: #e2e8f0;
+        }
+      }
+    }
+  }
+  &__body {
+    height: 100%;
+    max-height: 100%;
+    overflow: hidden scroll;
+    background: #dbeafe;
+    display: flex;
+    &-reply {
+      padding: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      // align-self: flex-end;
+      // align-items:;
+      // justify-content: flex-end;
+      .incoming {
+        justify-content: flex-start;
+      }
+      .outcoming {
+        justify-content: flex-end;
+        &-text {
+          color: #94a3b8;
+          background: #ffffff;
+        }
+      }
+      &-item {
+        padding: 8px 24px;
+        display: flex;
+        align-items: flex-end;
+        gap: 10px;
+        .image {
+          width: 40px;
+          height: 40px;
+          flex-shrink: 0;
+          border-radius: 50%;
+          overflow: hidden;
+        }
+
+        .content {
+          display: flex;
+          max-width: 80%;
+          &-call {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 10px 10px 10px 5px;
+            .icon {
+              width: 48px;
+              height: 48px;
+              border-radius: 10px;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              flex-shrink: 0;
+              background: #e2e8f0;
+            }
+            .text {
+              h6 {
+                margin: 0;
+                font-size: 14px;
+                color: #64748b;
+              }
+              span {
+                font-size: 10px;
+              }
+            }
+          }
+          &-text {
+            color: #ffffff;
+            background: #2563eb;
+            padding: 12px 16px;
+            border-radius: 10px;
+            width: 100%;
+            word-wrap: break-word;
+          }
+          &-media {
+            width: 280px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            border-radius: 10px;
+            background: #ffffff;
+            padding: 10px;
+            .thumb {
+              flex-grow: 1;
+              width: 80px;
+              border-radius: 10px;
+              overflow: hidden;
+            }
+          }
+        }
+      }
+      &-time {
+        font-size: 14px;
+        font-weight: 500;
+        color: #94a3b8;
+        padding: 6px 24px;
+        text-align: center;
+      }
+    }
+  }
+  &__bottom {
+    display: flex;
+    // justify-self: flex-end;
+    align-items: flex-end;
+    gap: 10px;
+    padding: 24px;
+    &-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      // flex: 1;
+      justify-content: flex-start;
+      li {
+        button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 40px;
+          height: 40px;
+          padding: 8px 0;
+          border: none;
+          border-radius: 50%;
+          background: #e2e8f0;
+        }
+      }
+    }
+
+    &-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      input {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        background: #e2e8f0;
+      }
+      ul {
+        display: flex;
+        li {
+          button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 8px 0;
+            border: none;
+            border-radius: 50%;
+            background: #e2e8f0;
+          }
+        }
+      }
+    }
+  }
+}
