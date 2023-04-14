@@ -169,10 +169,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      // flex: 1;
       justify-content: flex-start;
       li {
-        button {
+        .threeButton {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -182,6 +181,35 @@
           border: none;
           border-radius: 50%;
           background: #e2e8f0;
+        }
+        .modal-body{
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          .remainder{
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            p{
+              margin-bottom: 3px;
+            }
+          }
+          .item{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            
+            input{
+              border-radius: 10px;
+              padding-left: 20px;
+              font-size: 20px;
+            }
+            textarea{
+              border-radius: 10px;
+              padding-left: 20px;
+              font-size: 20px;
+            }
+          }
         }
       }
     }
