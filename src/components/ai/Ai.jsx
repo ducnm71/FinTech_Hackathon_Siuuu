@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import SideBarAI from "./sideBarAI";
 import styled from "styled-components";
-import { set } from "lodash";
-import { message } from "antd";
-const API_KEY = "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"
+
+
+const API_KEY = "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"
+
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",
@@ -13,7 +14,7 @@ const systemMessage = {
 const Ai = () => {
   const [messages, setMessages] = useState([
     {
-      message: "Hello, I'm ChatGPT! Ask me anything!",
+      message: "Hello, I'm your assistant! Ask me anything!",
       sentTime: "just now",
       sender: "ChatGPT",
     },
@@ -88,19 +89,16 @@ const Ai = () => {
         setIsTyping(false);
       });
   }
-
-  const handleKey = (e) => {
-    e.code === "Enter" && handleSend(text);
-    console.log(messages);
-  };
-  const [copy, setCopy] = useState(false);
-
-  const handleCopy = () => {
-    setTimeout(() => {
-      setCopy(true);
-    }, 1000);
-  };
-
+  const handleChange = (e) => {
+    setText(e.target.value)
+  }
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    handleSend(text)
+    if (text.length > 0) {
+      setText("")
+    }
+  }
   return (
     <SAi>
       <SideBarAI />
@@ -109,58 +107,57 @@ const Ai = () => {
         {messages.map((message) => {
           return (
             <div className="qa2">
-                {message.sender === "user" &&
-              <div className="question">
-                <img
-                  src="https://connectme-html.themeyn.com/images/avatar/1.jpg"
-                  className="avt"
-                  alt=""
-                />
-                <p>
-                    {message.message}
-                </p>
-              </div>
-                }
-                {message.sender === "ChatGPT" && 
-              <div className="answer">
-                <img
-                  src="https://connectme-html.themeyn.com/images/avatar/bot-1.jpg"
-                  className="avtBot"
-                  alt=""
-                />
-                <div className="content_answer">
+              {message.sender === "user" &&
+                <div className="question">
+                  <img
+                    src="https://connectme-html.themeyn.com/images/avatar/1.jpg"
+                    className="avt"
+                    alt=""
+                  />
                   <p>
                     {message.message}
                   </p>
                 </div>
-              </div>     
-                }
+              }
+              {message.sender === "ChatGPT" &&
+                <div className="answer">
+                  <img
+                    src="https://connectme-html.themeyn.com/images/avatar/bot-1.jpg"
+                    className="avtBot"
+                    alt=""
+                  />
+                  <div className="content_answer">
+                    <p>
+                      {message.message}
+                    </p>
+                  </div>
+                </div>
+              }
             </div>
           );
         })}
 
         <div className="send">
-          {/* <form onSubmit={handleSend}> */}
+          <form onSubmit={(e) => handleSubmit(e)}>
 
-          <input
-            type="text"
-            required
-            value={text}
-            placeholder="Search here"
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKey}
-          />
-          <button>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path d="m21.426 11.095-17-8A.999.999 0 0 0 3.03 4.242L4.969 12 3.03 19.758a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81zM5.481 18.197l.839-3.357L12 12 6.32 9.16l-.839-3.357L18.651 12l-13.17 6.197z"></path>
-            </svg>
-          </button>
-          {/* </form> */}
+            <input
+              type="text"
+              required
+              value={text}
+              placeholder="Search here"
+              onChange={(e) => handleChange(e)}
+            />
+            <button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+              >
+                <path d="m21.426 11.095-17-8A.999.999 0 0 0 3.03 4.242L4.969 12 3.03 19.758a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81zM5.481 18.197l.839-3.357L12 12 6.32 9.16l-.839-3.357L18.651 12l-13.17 6.197z"></path>
+              </svg>
+            </button>
+          </form>
         </div>
       </div>
     </SAi>
