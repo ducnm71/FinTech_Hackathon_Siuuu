@@ -10,6 +10,9 @@ import { v4 as uuid } from 'uuid';
 import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
 
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Chat = () => {
   const {data} = useContext(ChatContext)
@@ -279,9 +282,10 @@ const Chat = () => {
                         setShow(!show)}} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                       <button type="button" class="btn btn-primary" id="upload" 
                       onClick={() =>  {
+                        toast.success('Link bank account successfully!')
                         setImage(null)
                         setLink(!link)}}
-                      >Transfer</button>
+                      >Link</button>
                   </div>
                     </>
                   }
@@ -334,6 +338,7 @@ const Chat = () => {
           </ul>
         </div>
       </div>
+      <ToastContainer />
     </div>
   )
 }
