@@ -130,6 +130,9 @@ const Ai = () => {
 
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
+    if(e.code==="Enter"){
+      setText("");
+    }
     console.log(messages);
   };
   const [copy, setCopy] = useState(false);

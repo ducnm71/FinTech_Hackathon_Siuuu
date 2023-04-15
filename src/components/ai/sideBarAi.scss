@@ -2,6 +2,8 @@
     display: grid;
   grid-template-rows: 10% 75% 15%;
   background-color: transparent;
+  border-right: 1px solid #86a4e4;
+  
   .head {
     display: flex;
     justify-content: center;

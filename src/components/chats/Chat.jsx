@@ -12,6 +12,10 @@ import Canvas from '../canvas/Canvas'
 import { TransactionContext } from '../../context/TransactionContext'
 import axios from 'axios'
 import { set } from 'lodash'
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
@@ -103,7 +107,7 @@ const Chat = () => {
     setLink(!link)
   }
 
-  console.log(newImage);
+  
   const fileSelect = useRef()
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
@@ -116,19 +120,10 @@ const Chat = () => {
   }, [data.chatId]);
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
-<<<<<<< HEAD
-    .then((res) => {
-      const result = res.data.includes("transfer")
-      console.log(result);
-      if(result){
-        setResult(!Result)
-=======
       .then((res) => {
         const result = res.data.includes("transfer")
         if (result) {
           setResult(!Result)
->>>>>>> 7c20fa81abfafa2c7de0660ca47591687d211c5c
-
         }
       })
     if (img) {
@@ -250,7 +245,7 @@ const Chat = () => {
                 <button type="button" class="btn btn-primary">Yes</button>
               </div>
             </div>
-          }
+          } 
         <ul className="chat__bottom-left">
           <li>
             <button onClick={() => setShow(!show)} className='threeButton' type="button" class="btn btn-primary" id="primary" data-toggle="modal" data-target="#exampleModalCenter">
