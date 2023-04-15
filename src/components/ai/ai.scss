@@ -1,7 +1,7 @@
 .my-container{
   width: 100%;
   position: absolute;
-  height: 100vh;
+  height: 87vh;
   transition: all 0.5s ease;
   z-index: 0;
   margin: 0;
@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 .chat_container {
-    height: 100vh;
+    height: 87vh;
     width: 100%;
     display: grid;
     grid-template-columns: 25% 75%;
