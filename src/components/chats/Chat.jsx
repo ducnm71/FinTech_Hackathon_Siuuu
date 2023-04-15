@@ -55,6 +55,10 @@ const Chat = () => {
     setNewImage(canvas.toDataURL())
     // setImage(null)
   };
+  const handleKey = (e) => {
+    e.code === "Enter" && handleSend(text)
+  };
+
   const handleFaceIO = async () => {
     const fileInput = document.getElementById('hehe'); 
     const data = {image: newImage}
@@ -88,6 +92,7 @@ const Chat = () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
     .then((res) => {
       const result = res.data.includes("transfer")
+      console.log(result);
       if(result){
         setResult(!Result)
 
@@ -379,8 +384,8 @@ const Chat = () => {
         </ul>
        
         <div className="chat__bottom-right">
-          <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
-          <input type="file" id='file' ref={fileSelect} onChange={(e) => setImg(e.target.files[0])} style={{ display: 'none' }} />
+          <input type="text" value={text} onChange={(e) => setText(e.target.value) } onKeyDown={handleKey}/>
+          <input type="file" id='file' ref={fileSelect} onChange={(e) => setImg(e.target.files[0])} style={{ display: 'none' }}  onKeyDown={handleKey}/>
           <ul>
             <li>
               <button>
