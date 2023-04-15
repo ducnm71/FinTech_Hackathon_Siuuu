@@ -9,7 +9,7 @@ import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
 import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
-
+import Jimp from 'jimp'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -37,10 +37,14 @@ const Chat = () => {
     setImage(canvas);
 
     setNewImage(canvas.toDataURL())
-    // setImage(null)
+
+    
   };
 
   console.log(newImage);
+
+
+
   const fileSelect = useRef()
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
