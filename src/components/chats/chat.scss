@@ -165,6 +165,28 @@
     align-items: flex-end;
     gap: 10px;
     padding: 24px;
+    .hoichuyentien{
+      width: 80%;
+      justify-content: center;
+      align-items: center;
+      position: absolute;
+      left: 19%;
+      top: 86.5%;
+      background-color: wheat;
+      
+      display: flex;
+      gap: 2rem;
+      p{
+        margin-top: 20px;
+      }
+      .hoi{
+        display: flex;
+        gap: 0.5rem;
+        button{
+
+        }
+      }
+    }
     &-left {
       display: flex;
       align-items: center;

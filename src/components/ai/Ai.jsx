@@ -273,7 +273,6 @@ const SAi = styled.div`
           gap: 10px;
           img {
             width: 48px;
-
           }
         }
       }
@@ -290,7 +289,6 @@ const SAi = styled.div`
       border-radius: 10px;
       margin-top: 10px;
     }
-
     .question {
       display: flex;
       align-items: center;
@@ -332,7 +330,6 @@ const SAi = styled.div`
               color: #475569;
             }
           }
-
           .code {
             .title {
               display: flex;
@@ -362,12 +359,10 @@ const SAi = styled.div`
     left: 44%;
     li {
       padding: 10px;
-
       &:nth-child(odd) {
        background-color: #ffffff;
       }
     }
-
   }
   .send {
     width: 40%;

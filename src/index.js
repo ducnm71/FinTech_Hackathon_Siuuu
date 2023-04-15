@@ -5,15 +5,18 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AuthContextProvider } from './context/AuthContext';
 import { ChatContextProvider } from './context/ChatContext';
-
+import { TransactionsProvider } from './context/TransactionContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <AuthContextProvider>
-    <ChatContextProvider>
-      {/* <React.StrictMode> */}
+    <TransactionsProvider>
+      <ChatContextProvider>
+        {/* <React.StrictMode> */}
         <App />
-      {/* </React.StrictMode> */}
-    </ChatContextProvider>
+        {/* </React.StrictMode> */}
+      </ChatContextProvider>
+    </TransactionsProvider>
+
   </AuthContextProvider>
 );
 
