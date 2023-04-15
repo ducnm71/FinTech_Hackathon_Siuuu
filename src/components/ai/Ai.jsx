@@ -1,14 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import SideBarAI from "./sideBarAI";
 import styled from "styled-components";
-import code1 from "../../image/chat-bot/code1.png";
-import code2 from "../../image/chat-bot/code2.png";
-import code3 from "../../image/chat-bot/code3.png";
-import code4 from "../../image/chat-bot/code4.png";
-import code5 from "../../image/chat-bot/code5.png";
-import code6 from "../../image/chat-bot/code6.png";
-import { set } from "lodash";
-import { message } from "antd";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import { useNavigate } from "react-router-dom";
 const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
@@ -276,7 +273,6 @@ const SAi = styled.div`
           gap: 10px;
           img {
             width: 48px;
-
           }
         }
       }
@@ -293,7 +289,6 @@ const SAi = styled.div`
       border-radius: 10px;
       margin-top: 10px;
     }
-
     .question {
       display: flex;
       align-items: center;
@@ -335,7 +330,6 @@ const SAi = styled.div`
               color: #475569;
             }
           }
-
           .code {
             .title {
               display: flex;
@@ -365,12 +359,10 @@ const SAi = styled.div`
     left: 44%;
     li {
       padding: 10px;
-
       &:nth-child(odd) {
        background-color: #ffffff;
       }
     }
-
   }
   .send {
     width: 40%;

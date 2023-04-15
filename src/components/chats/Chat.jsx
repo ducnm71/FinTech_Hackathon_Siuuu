@@ -7,6 +7,8 @@ import { db, storage } from '../../firebase/config'
 import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
+import Camera from '../camera/Camera'
+import Canvas from '../canvas/Canvas'
 
 
 const Chat = () => {
@@ -15,8 +17,28 @@ const Chat = () => {
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
-  const fileSelect = useRef()
 
+  const [link, setLink] = useState(false)
+  const [show, setShow] = useState(data.payment)
+  const [image, setImage] = useState(null);
+  const [confirm, setConfirm] = useState(false)
+  const [newImage, setNewImage] = useState(null)
+
+  const handleCapture = async () => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 320;
+    canvas.height = 240;
+    const context = canvas.getContext('2d');
+    context.drawImage(document.querySelector('video'), 0, 0, canvas.width, canvas.height);
+    console.log(canvas.toDataURL('image/png', 0.5));
+    setImage(canvas);
+
+    setNewImage(canvas.toDataURL())
+    // setImage(null)
+  };
+
+  console.log(newImage);
+  const fileSelect = useRef()
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
       doc.exists() && setMessages(doc.data().messages);
@@ -31,6 +53,7 @@ const Chat = () => {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
       const uploadTask = uploadBytesResumable(storageRef, img);
+
       uploadTask.on(
         (error) => {
           //TODO:Handle Error
@@ -48,7 +71,6 @@ const Chat = () => {
             });
           });
           console.log('sucees');
-          
         }
       );
     } else {
