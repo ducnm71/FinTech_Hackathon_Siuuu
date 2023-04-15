@@ -83,19 +83,18 @@ const Chat = () => {
     // setImage(null)
   };
   const handleFaceIO = async () => {
-    const fileInput = document.getElementById('hehe'); 
-    const data = {image: newImage}
     console.log(newImage);
 
-    fetch('http://localhost:5000/api/init_face', {
+    // fetch('http://localhost:5000/api/init_face', {
+    fetch('http://localhost:5000/api/is_image_valid', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ image_data: newImage })
     })
-    .then(response => response.json())
-    .then(data => console.log(data));
+      .then(response => response.json())
+      .then(data => console.log(data));
     setImage(null)
     setLink(!link)
   }
@@ -113,13 +112,13 @@ const Chat = () => {
   }, [data.chatId]);
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
-    .then((res) => {
-      const result = res.data.includes("transfer")
-      if(result){
-        setResult(!Result)
+      .then((res) => {
+        const result = res.data.includes("transfer")
+        if (result) {
+          setResult(!Result)
 
-      }
-    })
+        }
+      })
     if (img) {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
@@ -233,13 +232,10 @@ const Chat = () => {
           {
             Result&& 
             <div className='hoichuyentien'>
-              <p>You want to transfer amount?</p>
+              <p>May muon chuyen tien ak</p>
               <div className='hoi'>
                 <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
-                <button type="button" class="btn btn-primary" onClick={() => {
-                  setResult(!Result)
-                  setShow(!show)
-                }}>Yes</button>
+                <button type="button" class="btn btn-primary">Yes</button>
               </div>
             </div>
           }
@@ -369,11 +365,8 @@ const Chat = () => {
                                 )
                               }
                               <Camera />
-                              <button type="button" class="btn btn-primary" style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
-                              {
-                                image&&<img  src={newImage} alt='' />
-                              }
-                              
+                              <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
+                              {image&&<img  src={newImage} alt=''/>}
 
 
                             </div>
@@ -416,9 +409,9 @@ const Chat = () => {
             </button>
 
           </li>
-          
+
         </ul>
-       
+
         <div className="chat__bottom-right">
           <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
           <input type="file" id='file' ref={fileSelect} onChange={(e) => setImg(e.target.files[0])} style={{ display: 'none' }} />
