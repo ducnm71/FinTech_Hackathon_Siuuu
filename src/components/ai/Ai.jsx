@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { TransactionContext } from '../../context/TransactionContext'
 import { shortenAddress } from '../../utils/shortenAddress'
 import { IoMdSend } from "react-icons/io";
-const API_KEY = "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"
+const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",
