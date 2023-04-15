@@ -14,6 +14,10 @@ import axios from 'axios'
 
 
 
+import 'react-toastify/dist/ReactToastify.css';
+
+
+
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
@@ -161,7 +165,7 @@ const Chat = () => {
 
   }
 
-  console.log(newImage);
+  
   const fileSelect = useRef()
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
@@ -175,9 +179,10 @@ const Chat = () => {
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
       .then((res) => {
-        const result = res.data.includes("transfer")
+        const result = res.data
+        console.log(result)
         if (result) {
-          setResult(!Result)
+          setResult(result)
 
   }})
     if (img) {
@@ -292,9 +297,9 @@ const Chat = () => {
 
       <div className="chat__bottom">
         {
-          Result &&
+          Result == "transfer_money" &&
           <div className='hoichuyentien'>
-            <p>May muon chuyen tien ak</p>
+            <p>Bạn muốn chuyển tiền à</p>
             <div className='hoi'>
               <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
               <button type="button" onClick={() => {
@@ -305,6 +310,21 @@ const Chat = () => {
             </div>
           </div>
         }
+        {
+          Result == "transfer_history" &&
+          <div className='hoichuyentien'>
+            <p>Bạn muốn xem lịch sử chuyển tiền à</p>
+            <div className='hoi'>
+              <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
+              <button type="button" onClick={() => {
+                setLink(!link)
+                setShow(!show)}} class="btn btn-primary">Yes</button>
+
+              
+            </div>
+          </div>
+        }
+
         <ul className="chat__bottom-left">
           <li>
             <button onClick={() => setShow(!show)} className='threeButton' type="button" class="btn btn-primary" id="primary" data-toggle="modal" data-target="#exampleModalCenter">
