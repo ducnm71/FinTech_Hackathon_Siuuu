@@ -175,9 +175,6 @@ const Ai = () => {
       <>
         <ul>
           <li>Lịch sử giao dịch</li>
-          {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
-
-            return (
               <table class="table table-striped">
                 <thead>
                   <tr>
@@ -203,8 +200,6 @@ const Ai = () => {
                   }
                 </tbody>
               </table>
-            )
-          })}
         </ul>
       </>
     )

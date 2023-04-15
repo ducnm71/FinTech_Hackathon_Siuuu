@@ -1,11 +1,18 @@
 .contact_container {
-    display: grid;
+  display: grid;
   grid-template-rows: 10% 75% 15%;
   background-color: transparent;
+  border-right: 1px solid #dbeafe;
+  overflow: hidden;
+  width: 360px;
+  height: calc(100vh - 80px);
+  background-color: #dbeafe;
+  position: static;
   .head {
     display: flex;
     justify-content: center;
     align-items: center;
+    
   }
   .body {
     display: flex;
@@ -35,5 +42,14 @@
     justify-content: center;
     align-items: center;
     gap: 2rem;
+    .foot1, .foot2{
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: white;
+      padding: 10px 20px 0;
+      border-radius: 10px;
+    }
   }
 }

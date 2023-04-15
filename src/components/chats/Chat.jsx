@@ -11,7 +11,8 @@ import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
 import { TransactionContext } from '../../context/TransactionContext'
 import axios from 'axios'
-import { set } from 'lodash'
+import { result, set } from 'lodash'
+import { async } from 'q'
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
@@ -53,21 +54,31 @@ const Chat = () => {
   const { connectWallet, currentAccount, sendTransaction } = useContext(TransactionContext)
   const [values, setValues] = useState({
     addressTo: '',
-    amount: '',
+    amount: 0,
     message: ''
   })
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-    console.log(values)
+  const handleChange =  (event) => {
+    if (event.target.name === 'amount') {
+        setValues({ ...values, amount: (event.target.value /28400000)});
+    }
+    if (event.target.name === 'message') {
+      setValues({ ...values, message: event.target.value });
+    }
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
-    console.log(values)
+    
     setValues({...values, addressTo: cardUser})
     if (!values.addressTo || !values.amount || !values.message) return;
 
+    // const realAmount = values.amount/28400000
+    // console.log(realAmount, values.amount);
+    // await setValues({...values, amount: realAmount})
+
+    console.log(values)
     sendTransaction({values, setIsLoading});
+    console.log(isLoading);
 
   }
   const handleCapture = async () => {
@@ -116,21 +127,21 @@ const Chat = () => {
   }, [data.chatId]);
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
-<<<<<<< HEAD
     .then((res) => {
       const result = res.data.includes("transfer")
       console.log(result);
       if(result){
         setResult(!Result)
-=======
-      .then((res) => {
-        const result = res.data.includes("transfer")
-        if (result) {
-          setResult(!Result)
->>>>>>> 7c20fa81abfafa2c7de0660ca47591687d211c5c
 
-        }
-      })
+        .then((res) => {
+          const result = res.data.includes("transfer")
+          if (result) {
+            setResult(!Result)
+
+
+          }
+        })
+  }})
     if (img) {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
@@ -185,6 +196,7 @@ const Chat = () => {
     setText("");
     setImg(null);
   };
+
   console.log(img);
   return (
     <div className='chat'>
@@ -247,7 +259,11 @@ const Chat = () => {
               <p>May muon chuyen tien ak</p>
               <div className='hoi'>
                 <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
-                <button type="button" class="btn btn-primary">Yes</button>
+                <button type="button" onClick={() => {
+                  setShow(!show)
+                  setLink(!link)
+                  setResult(!Result)
+                }} class="btn btn-primary">Yes</button>
               </div>
             </div>
           }
@@ -286,8 +302,13 @@ const Chat = () => {
                                   </div>
 
                                   <div className="item">
-                                    <input placeholder='Amount' name="amount" min='0.0001' type='text' required onChange={(e) => handleChange(e)} />
-                                    <textarea placeholder='Transfer Content' name="message" onChange={(e) => handleChange(e)} />
+                                    <div style={{display: 'flex', gap: '2rem', marginTop:'-20px'}}>
+                                      <h5>Receiver Acount:</h5>
+                                      <p>{data.user.displayName}</p>
+                                    </div>
+                                    <input value={cardUser}/>
+                                    <input placeholder='Amount' name="amount" min='0.0001' type='text' required onChange={handleChange} />
+                                    <textarea placeholder='Transfer Content' name="message" onChange={handleChange} />
                                   </div>
 
                                 </div>
@@ -295,6 +316,7 @@ const Chat = () => {
                                   <button onClick={() => {
                                     setLink(!link)
                                     setShow(!show)
+                                    // setResult(!Result)
                                   }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                   <button type="button"  onClick={handleSubmit} class="btn btn-primary" id="upload"
                                   >Transfer</button>
