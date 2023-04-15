@@ -1,0 +1,36 @@
+text,label
+"Tôi,muốn,chuyển,tiền",transfer_money
+"Cách thức,chuyển,tiền,như,thế nào,?",transfer_money
+"Làm,thế nào,để,chuyển khoản,?",transfer_money
+"Tôi,muốn,gửi,tiền,cho,người thân",transfer_money
+"Tôi,muốn,thanh toán,hóa,đơn",transfer_money
+"Bao lâu,thì,tiền,sẽ,được,chuyển,?",transfer_time
+"Thời gian,chuyển khoản,là,bao lâu,?",transfer_time
+"Khi nào,tiền,sẽ,được,chuyển,?",transfer_time
+"Bao giờ,tôi,nhận,được,tiền,?",transfer_time
+"Phí,chuyển khoản,là,bao nhiêu,?",transfer_fee
+"Tôi,phải,trả,bao nhiêu,tiền,phí,khi,chuyển khoản,?",transfer_fee
+"Phí,chuyển khoản,tính,như,thế nào,?",transfer_fee
+"Tôi,cần,biết,giá trị,phí,chuyển khoản",transfer_fee
+"Chào bạn, hôm nay bạn có muốn đi xem phim không?",normal_action
+"Ừ, được chứ. Bạn muốn xem phim gì?", normal_action
+"Mình muốn xem bộ phim mới của Marvel, bạn thấy sao?", normal_action
+"OK, được chứ. Bạn đặt vé rồi nhé?", normal_action
+"Alo, chị ơi. Chị đang làm gì vậy?", normal_action
+"Chị đang nấu cơm cho gia đình đây, sao em?", normal_action
+"Em định qua nhà chị lát nữa, chơi với các cháu được không?", normal_action
+"Tất nhiên rồi em, chị đang làm cơm đây, lát nữa em qua làm gì nha.", normal_action
+"Chào bạn, công việc của chúng ta hôm nay có khá nhiều việc phải làm đó, bạn có thể giúp tôi được không?", normal_action
+"Dạ, được chứ. Những việc nào cần làm, bạn chỉ giúp tôi làm đúng cách là được.", normal_action
+"Cảm ơn bạn, tôi sẽ hướng dẫn bạn cụ thể.", normal_action
+"Tôi cần chuyển khoản tiền cho người thân.", transfer_money
+"Tôi muốn thanh toán hóa đơn bằng cách chuyển tiền qua tài khoản ngân hàng.", transfer_money
+"Làm thế nào để chuyển tiền từ tài khoản của tôi sang tài khoản khác?", transfer_money
+"Tôi muốn biết chi phí phí chuyển khoản là bao nhiêu?", transfer_fee
+"Bao lâu thì tiền sẽ được chuyển khi tôi thực hiện chuyển khoản?", transfer_time
+"Tôi cần biết thời gian chuyển khoản để có thể sắp xếp chi tiêu.", transfer_time
+"Tôi muốn gửi tiền từ tài khoản của mình sang tài khoản khác ở một ngân hàng khác.", transfer_money
+"Tôi muốn biết cách chuyển tiền một cách an toàn và hiệu quả nhất.", transfer_money
+"tôi muốn chuyển tiền trong hôm nay", transfer_time
+"tôi muốn chuyển tiền luôn", transfer_time
+"tôi là con người", normal_action
