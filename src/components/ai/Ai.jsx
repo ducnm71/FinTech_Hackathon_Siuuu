@@ -1,12 +1,16 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import SideBarAI from "./sideBarAI";
-import styled from "styled-components";
+import './ai.scss'
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useNavigate } from "react-router-dom";
+import { TransactionContext } from '../../context/TransactionContext'
+import { shortenAddress } from '../../utils/shortenAddress'
+import { IoMdSend } from "react-icons/io";
 const API_KEY = "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"
+
 const Ai = () => {
   
   const [text, setText] = useState("");
@@ -29,8 +33,11 @@ const Ai = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [option, setOption] = useState(false)
   const [chats, setChats] = useState([])
-  const { currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const { data, dispatch } = useContext(ChatContext);
+  const { transactions } = useContext(TransactionContext);
+  console.log(transactions)
+  const scrollRef = useRef();
   console.log(currentUser);
   useEffect(() => {
     const getChats = () => {
@@ -44,13 +51,13 @@ const Ai = () => {
         unsub();
       }
     }
-    
+
     currentUser.uid && getChats()
-    
+
   }, [currentUser.uid])
 
   useEffect(() => {
-    if(text === '/') setOption(true)
+    if (text === '/') setOption(true)
     else setOption(false)
   }, [text])
 
@@ -141,13 +148,17 @@ const Ai = () => {
     dispatch({ type: "CHANGE_USER_PAYMENT", payload: u })
   };
 
-
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
+    if ( e.code === "Enter") {
+      if ( text.length > 0) {
+        setText("")
+      }
+    }
     console.log(messages);
   };
   const [copy, setCopy] = useState(false);
-
+  //xử lý chuyển tiền
   const handlePay = () => {
     setMessages([...messages, {
       message: 'Chuyển tiền',
@@ -160,14 +171,14 @@ const Ai = () => {
       <>
         <ul>
           <li>Người dùng trong danh bạ</li>
-        { chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
-                return (
-                  <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
-                    <img src={chat[1].userInfo?.photoURL} alt="" />
-                    <p>{chat[1].userInfo?.displayName}</p>
-                  </li>
-                )
-              })}
+          {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
+            return (
+              <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
+                <p>{chat[1].userInfo?.displayName}</p>
+                <img src={chat[1].userInfo?.photoURL} alt=""  style={{ height: '100px', with: '100px' }}/>
+              </li>
+            )
+          })}
         </ul>
       </>
     )
@@ -177,7 +188,56 @@ const Ai = () => {
       sender: 'ChatGPT'
     }])
   }
+  //xử lí lịch sử giao dịch
+  const handleHistory = () => {
+    setMessages([...messages, {
+      message: 'Lịch sử',
+      sender: "user",
+    }])
 
+    setText('')
+    let messGpT = (
+      <>
+        <ul>
+          <li>Lịch sử giao dịch</li>
+          {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
+
+            return (
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th scope="col">Địa chỉ nhận</th>
+                    <th scope="col">Địa chỉ gửi</th>
+                    <th scope="col">Số tiền</th>
+                    <th scope="col">Tin nhắn</th>
+                    <th scope="col">Thời gian</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {transactions.map((transaction, i) => {
+                    return (
+                      <tr>
+                        <th scope="row">{shortenAddress(transaction.addressTo)}</th>
+                        <td>{shortenAddress(transaction.addressFrom)}</td>
+                        <td>{transaction.amount}</td>
+                        <td>{transaction.message}</td>
+                        <td>{transaction.timestamp}</td>
+                      </tr>
+                    )
+                  })
+                  }
+                </tbody>
+              </table>
+            )
+          })}
+        </ul>
+      </>
+    )
+    setMessages([...messages, {
+      message: messGpT,
+      sender: 'ChatGPT'
+    }])
+  }
   const handleCopy = () => {
     setTimeout(() => {
       setCopy(true);
@@ -190,219 +250,74 @@ const Ai = () => {
   }
 
   return (
-    <SAi>
-      <SideBarAI />
-
-      <div className="content">
-        {messages.map((message) => {
-          return (
-            <div className="qa2">
-              {message.sender === "user" &&
-                <div className="question">
-                  <img
-                    src="https://connectme-html.themeyn.com/images/avatar/1.jpg"
-                    className="avt"
-                    alt=""
-                  />
-                  <p>
-                    {message.message}
-                  </p>
-                </div>
-              }
-              {message.sender === "ChatGPT" &&
-                <div className="answer">
-                  <img
+    <div className="my-container">
+      <div className="chat_container">
+        <SideBarAI />
+        <div className="chatcontainer">
+          <div className="chat-header">
+            <div className="user-details">
+              <div className="avatar">
+              <img
                     src="https://connectme-html.themeyn.com/images/avatar/bot-1.jpg"
                     className="avtBot"
                     alt=""
                   />
-                  <div className="content_answer">
-                    <p>
-                      {message.message}
-                    </p>
+              </div>
+              <div className="username">
+                Assistant
+              </div>
+            </div>
+          </div>
+          <div className="chat-messages">
+            {messages.map((message, index) => {
+              return (
+                <div ref={scrollRef} key={index}>
+                  <div className={`message ${message.sender == "user" ? "sended" : "recieved"}`}>
+                    <div className='content'>
+                      <p>{message.message}</p>
+                    </div>
                   </div>
                 </div>
-              }
+              )
+            })}
+            <div>
+              {isTyping ? "The assistant is typing..." : ""}
             </div>
-          );
-        })}
-        {option && 
-          <ul className="send-option">
-            <li onClick={handlePay}>Gửi tiền</li>
-            <li>Lịch sử giao dịch</li>
-            {/* <li></li>
+          </div>
+          <div className="input_container">
+            <div className="button-container">
+              <div className="emoji">
+
+              </div>
+            </div>
+
+            <div className="form_container">
+              <input type="text" placeholder="Nhắn tin..."
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKey}
+                value={text}
+              ></input>
+              <button className="submit">
+                <IoMdSend></IoMdSend>
+              </button>
+            </div>
+          </div>
+          {option &&
+            <ul className="send-option">
+              <li onClick={handlePay}>Gửi tiền</li>
+              <li onClick={handleHistory}>Lịch sử giao dịch</li>
+              {/* <li></li>
             <li></li>
             <li></li> */}
-          </ul>
-        }
-        <div className="send">
-          {/* <form onSubmit={handleSend}> */}
-
-          <input
-            type="text"
-            required
-            value={text}
-            placeholder="Search here"
-            onChange={(e) => setText(e.target.value)}
-            onKeyDown={handleKey}
-          />
-          <button>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-            >
-              <path d="m21.426 11.095-17-8A.999.999 0 0 0 3.03 4.242L4.969 12 3.03 19.758a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81zM5.481 18.197l.839-3.357L12 12 6.32 9.16l-.839-3.357L18.651 12l-13.17 6.197z"></path>
-            </svg>
-          </button>
-          {/* </form> */}
+            </ul>
+          }
         </div>
+
       </div>
-    </SAi>
+
+    </div>
   );
 };
 
 export default Ai;
 
-const SAi = styled.div`
-  background-color: #dbeafe;
-  display: flex;
-  overflow: hidden;
-  /* flex: 2; */
-  height: calc(100vh - 80px);
-  .content {
-    flex: 3;
-    overflow: hidden;
-    overflow-y: scroll;
-    scroll-behavior: inherit;
-    /* height: 740px; */
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 0.1rem;
-    /* position: relative; */
-    p {
-      font-size: 17px;
-      color: #475569;
-      ul {
-        li {
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          img {
-            width: 48px;
-          }
-        }
-      }
-    
-    }
-    .avt {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-    }
-    .avtBot {
-      width: 35px;
-      height: 35px;
-      border-radius: 10px;
-      margin-top: 10px;
-    }
-    .question {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background-color: #eff6ff;
-      padding: 10px 20px;
-    }
-    .answer {
-      display: flex;
-      gap: 1rem;
-      padding: 10px 20px;
-      background-color: white;
-      ol {
-        margin-left: -20px;
-        li {
-          font-size: 17px;
-          color: #475569;
-        }
-      }
-    }
-    .qa1 {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-    .qa2 {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-    }
-    .qa3 {
-      display: flex;
-      flex-direction: column;
-      gap: 0.1rem;
-      .answer {
-        .content_answer {
-          dl {
-            li {
-              color: #475569;
-            }
-          }
-          .code {
-            .title {
-              display: flex;
-              align-items: center;
-              gap: 75%;
-              background-color: #1e293b;
-              height: 40px;
-              h3 {
-                margin-left: 10px;
-                font-size: 15px;
-                color: white;
-              }
-              p {
-                color: #dbeafe;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-  .send-option {
-    position: absolute;
-    background-color: #eff6ff;
-    width: 40%;
-    bottom: 15%;
-    left: 44%;
-    li {
-      padding: 10px;
-      &:nth-child(odd) {
-       background-color: #ffffff;
-      }
-    }
-  }
-  .send {
-    width: 40%;
-    position: absolute;
-    bottom: 5%;
-    left: 44%;
-    /* left: 0; */
-    display: flex;
-    align-items: center;
-    input {
-      padding: 20px;
-      width: 100%;
-      height: 70px;
-      border: 0;
-      border-radius: 10px;
-      font-size: 20px;
-    }
-    button{
-      border: 0;
-      background-color: white;
-      margin-left: -50px;
-  }
-  }
-`;
