@@ -70,7 +70,7 @@ const SSideBarAI = styled.div`
     .head{
         display: flex;
         /* gap: 15rem; */
-        padding: 0 15px;
+        padding: 20px 15px;
         justify-content: space-between;
         align-items: center;
         .head_text{
@@ -109,6 +109,8 @@ const SSideBarAI = styled.div`
                 p{
                     font-size: 15px;
                     margin-left: 40px;
+                    margin-top: 12px;
+                    line-height: 15px;
                     color: #94a3b8
                 }
             }
@@ -120,10 +122,12 @@ const SSideBarAI = styled.div`
         gap: 2rem;
         margin: 70% 0 0 0;
         justify-content: center;
+        
         .foot1{
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 1rem;
             padding: 10px 30px;
             svg{
                 margin-bottom: -10px;
@@ -138,6 +142,7 @@ const SSideBarAI = styled.div`
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 1rem;
             padding: 10px 30px;
             svg{
                 margin-bottom: -10px;

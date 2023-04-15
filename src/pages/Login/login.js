@@ -6,7 +6,8 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { doc, setDoc } from "firebase/firestore";
 import { useNavigate, Link } from "react-router-dom";
 import Add from "../../image/addAvatar.png"
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './style.css';
 import { useEffect } from "react";
 
@@ -111,6 +112,7 @@ const submitFormLogin = async (e) => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
+      toast.success('Login successfully!')
       navigate("/")
     } catch (err) {
       setErr(true);
@@ -234,8 +236,8 @@ const submitFormRegist = async (e) =>{
   
                   </Components.Overlay>
               </Components.OverlayContainer>
-              
           </Components.Container>
+         
           </div>
       )
 }
