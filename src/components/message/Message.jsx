@@ -3,10 +3,8 @@ import { AuthContext } from '../../context/AuthContext';
 import { ChatContext } from '../../context/ChatContext';
 
 const Message = ({mess}) => {
-  console.log(mess.text !== undefined);
   const {currentUser } = useContext(AuthContext)
   const {data} = useContext(ChatContext)
-  console.log(mess);
   return (
     <div className={`chat__body-reply-item incoming ${mess.senderId === currentUser.uid ? "outcoming" : "incoming"}`}>
             {mess.senderId !== currentUser.uid &&

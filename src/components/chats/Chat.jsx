@@ -12,6 +12,7 @@ import Canvas from '../canvas/Canvas'
 import Jimp from 'jimp'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import axios from 'axios'
 
 
 const Chat = () => {
@@ -26,6 +27,7 @@ const Chat = () => {
   const [image, setImage] = useState(null);
   const [confirm, setConfirm] = useState(false)
   const [newImage, setNewImage] = useState(null)
+  const [aiData, setAiData] = useState(null)
 
   const handleCapture = async () => {
     const canvas = document.createElement('canvas');
@@ -33,7 +35,7 @@ const Chat = () => {
     canvas.height = 240;
     const context = canvas.getContext('2d');
     context.drawImage(document.querySelector('video'), 0, 0, canvas.width, canvas.height);
-    console.log(canvas.toDataURL('image/png', 0.5));
+    
     setImage(canvas);
 
     setNewImage(canvas.toDataURL())
@@ -41,9 +43,9 @@ const Chat = () => {
     
   };
 
-  console.log(newImage);
 
 
+  
 
   const fileSelect = useRef()
   useEffect(() => {
@@ -56,9 +58,13 @@ const Chat = () => {
     };
   }, [data.chatId]);
   const handleSend = async () => {
+    axios.get(`http://localhost:3001/api/findclassifier/${text}`)
+    .then((res) => {
+      console.log(res.data);
+    })
     if (img) {
       const storageRef = ref(storage, uuid());
-      console.log('hehe');
+      
       const uploadTask = uploadBytesResumable(storageRef, img);
 
       uploadTask.on(
@@ -110,7 +116,7 @@ const Chat = () => {
     setText("");
     setImg(null);
   };
-  console.log(img);
+  
   return (
     <div className='chat'> 
       <div className="chat__top">
