@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import './chat.scss'
 import Message from '../message/Message'
 import { ChatContext } from '../../context/ChatContext'
-import { Timestamp, arrayUnion, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { Timestamp, arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase/config'
 import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
@@ -11,10 +11,35 @@ import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
 import { TransactionContext } from '../../context/TransactionContext'
 import axios from 'axios'
+import { set } from 'lodash'
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
+  console.log(data);
   const { currentUser } = useContext(AuthContext)
+  // console.log(currentUser);
+  const [card, setCard] = useState('')
+  const [cardUser, setCardUser] = useState('')
+  useEffect(() => {
+    const getUser = async () => {
+        const res = await getDoc(doc(db, "users", currentUser.uid));
+        console.log('hehe');
+        setCard(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
+    }
+
+    currentAccount && getUser()
+}, [])
+
+  
+  useEffect(()=> {
+    const getUser = async () => {
+      const res = await getDoc(doc(db, "users", data.user.uid));
+      console.log('hehe');
+      setCardUser(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
+  }
+
+  currentAccount && getUser()
+  },[data])
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
@@ -24,6 +49,7 @@ const Chat = () => {
   const [image, setImage] = useState(null);
   const [confirm, setConfirm] = useState(false)
   const [newImage, setNewImage] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { connectWallet, currentAccount, sendTransaction } = useContext(TransactionContext)
   const [values, setValues] = useState({
     addressTo: '',
@@ -38,9 +64,10 @@ const Chat = () => {
 
     e.preventDefault();
     console.log(values)
+    setValues({...values, addressTo: cardUser})
     if (!values.addressTo || !values.amount || !values.message) return;
 
-    sendTransaction(values);
+    sendTransaction({values, setIsLoading});
 
   }
   const handleCapture = async () => {
@@ -60,19 +87,18 @@ const Chat = () => {
   };
 
   const handleFaceIO = async () => {
-    const fileInput = document.getElementById('hehe'); 
-    const data = {image: newImage}
     console.log(newImage);
 
-    fetch('http://localhost:5000/api/init_face', {
+    // fetch('http://localhost:5000/api/init_face', {
+    fetch('http://localhost:5000/api/is_image_valid', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify({ image_data: newImage })
     })
-    .then(response => response.json())
-    .then(data => console.log(data));
+      .then(response => response.json())
+      .then(data => console.log(data));
     setImage(null)
     setLink(!link)
   }
@@ -90,14 +116,21 @@ const Chat = () => {
   }, [data.chatId]);
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
+<<<<<<< HEAD
     .then((res) => {
       const result = res.data.includes("transfer")
       console.log(result);
       if(result){
         setResult(!Result)
+=======
+      .then((res) => {
+        const result = res.data.includes("transfer")
+        if (result) {
+          setResult(!Result)
+>>>>>>> 7c20fa81abfafa2c7de0660ca47591687d211c5c
 
-      }
-    })
+        }
+      })
     if (img) {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
@@ -225,6 +258,7 @@ const Chat = () => {
             </button>
 
             {
+
               show &&
               <div class="modal fade show" style={{ display: 'block' }} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -262,62 +296,13 @@ const Chat = () => {
                                     setLink(!link)
                                     setShow(!show)
                                   }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  <button type="button" onClick={handleSubmit} class="btn btn-primary" id="upload"
+                                  <button type="button"  onClick={handleSubmit} class="btn btn-primary" id="upload"
                                   >Transfer</button>
                                 </div>
                               </>
                               :
                               <>
-                                <div class="modal-body">
-
-                                  <div className='remainder'>
-
-                                  </div>
-
-                                  <table className='table table-striped'>
-
-                                    <tbody>
-                                      <tr>
-                                        <th scope="row">Source account</th>
-                                        <td>0012030000</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Target account</th>
-                                        <td>1222224249</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Beneficiary</th>
-                                        <td>Anh Hoang</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Amount</th>
-                                        <td>100.000</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Fee transfer</th>
-                                        <td>0</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Content</th>
-                                        <td>Hehe</td>
-                                      </tr>
-                                    </tbody>
-
-
-                                  </table>
-
-                                </div>
-                                <div class="modal-footer">
-                                  <div className='total'>
-                                    <p>Total</p>
-                                    <p>100.000</p>
-                                  </div>
-                                  <button onClick={() => {
-                                    setConfirm(!confirm)
-                                  }} type="button" class="btn btn-secondary">Back</button>
-                                  <button type="button" class="btn btn-primary" id="upload"
-                                  >Confirm</button>
-                                </div>
+                                
                               </>
                           }
 
@@ -325,19 +310,26 @@ const Chat = () => {
                         :
                         <>
                           <div class="modal-body">
-                            <h5>You have not linked your Viettel Money account!</h5>
+                          {
+                            !currentAccount?<h5 style={{color: 'red'}}>You have not linked your Viettel Money account!</h5>
+                              : <h5 style={{color: 'green'}}>Link your Viettel Money account succussfully!</h5>
+                          }  
+                          
                             <div className="item">
                               {!currentAccount &&
                                 (
-                                  <button type="button" id="login-button" onClick={connectWallet}>
+                                  <button type="button" class="btn btn-primary" id="login-button" onClick={() => {
+                                    connectWallet({
+                                      currentUser, card
+                                    })
+                                    }}>
                                     Connect wallet
                                   </button>
                                 )
                               }
-                              <input placeholder='Your account number' name="addressTo" style={{ width: '100%' }} required onChange={(e) => handleChange(e)} />
                               <Camera />
                               <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
-                              <Canvas  image={image} />
+                              {image&&<img  src={newImage} alt=''/>}
 
 
                             </div>
@@ -349,7 +341,7 @@ const Chat = () => {
                             }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-primary" id="upload"
                               onClick={handleFaceIO}
-                            >Transfer</button>
+                            >Register</button>
                           </div>
                         </>
                     }
@@ -380,9 +372,9 @@ const Chat = () => {
             </button>
 
           </li>
-          
+
         </ul>
-       
+
         <div className="chat__bottom-right">
           <input type="text" value={text} onChange={(e) => setText(e.target.value) } onKeyDown={handleKey}/>
           <input type="file" id='file' ref={fileSelect} onChange={(e) => setImg(e.target.files[0])} style={{ display: 'none' }}  onKeyDown={handleKey}/>
