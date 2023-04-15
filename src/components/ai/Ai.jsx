@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBarAI from "./sideBarAI";
 import styled from "styled-components";
 import code1 from "../../image/chat-bot/code1.png";
@@ -9,7 +9,7 @@ import code5 from "../../image/chat-bot/code5.png";
 import code6 from "../../image/chat-bot/code6.png";
 import { set } from "lodash";
 import { message } from "antd";
-const API_KEY = "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"
+const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",
@@ -19,13 +19,39 @@ const systemMessage = {
 const Ai = () => {
   const [messages, setMessages] = useState([
     {
-      message: "Hello, I'm ChatGPT! Ask me anything!",
+      message: "Hello, I'm your assistant! Ask me anything!",
       sentTime: "just now",
       sender: "ChatGPT",
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [text, setText] = useState("");
+  const [option, setOption] = useState(false)
+  const [chats, setChats] = useState([])
+  const { currentUser} = useContext(AuthContext);
+  const { data, dispatch } = useContext(ChatContext);
+  console.log(currentUser);
+  useEffect(() => {
+    const getChats = () => {
+      // console.log(currentUser + 'haha');
+      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+        console.log(doc.data())
+        setChats(doc.data())
+      })
+
+      return () => {
+        unsub();
+      }
+    }
+    
+    currentUser.uid && getChats()
+    
+  }, [currentUser.uid])
+
+  useEffect(() => {
+    if(text === '/') setOption(true)
+    else setOption(false)
+  }, [text])
 
   const handleSend = async (message) => {
     const newMessage = {
@@ -95,17 +121,57 @@ const Ai = () => {
       });
   }
 
+  const handleChangeUser = (u) => {
+    dispatch({ type: "CHANGE_USER_PAYMENT", payload: u })
+  };
+
+
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
     console.log(messages);
   };
   const [copy, setCopy] = useState(false);
 
+  const handlePay = () => {
+    setMessages([...messages, {
+      message: 'Chuyển tiền',
+      sender: "user",
+    }])
+
+    setText('')
+
+    let messGpT = (
+      <>
+        <ul>
+          <li>Người dùng trong danh bạ</li>
+        { chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
+                return (
+                  <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
+                    <img src={chat[1].userInfo?.photoURL} alt="" />
+                    <p>{chat[1].userInfo?.displayName}</p>
+                  </li>
+                )
+              })}
+        </ul>
+      </>
+    )
+
+    setMessages([...messages, {
+      message: messGpT,
+      sender: 'ChatGPT'
+    }])
+  }
+
   const handleCopy = () => {
     setTimeout(() => {
       setCopy(true);
     }, 1000);
   };
+  const navigate = useNavigate()
+  const handleNavigate = (user) => {
+    handleChangeUser(user)
+    navigate('/')
+  }
 
   return (
     <SAi>
@@ -115,36 +181,44 @@ const Ai = () => {
         {messages.map((message) => {
           return (
             <div className="qa2">
-                {message.sender === "user" &&
-              <div className="question">
-                <img
-                  src="https://connectme-html.themeyn.com/images/avatar/1.jpg"
-                  className="avt"
-                  alt=""
-                />
-                <p>
-                    {message.message}
-                </p>
-              </div>
-                }
-                {message.sender === "ChatGPT" && 
-              <div className="answer">
-                <img
-                  src="https://connectme-html.themeyn.com/images/avatar/bot-1.jpg"
-                  className="avtBot"
-                  alt=""
-                />
-                <div className="content_answer">
+              {message.sender === "user" &&
+                <div className="question">
+                  <img
+                    src="https://connectme-html.themeyn.com/images/avatar/1.jpg"
+                    className="avt"
+                    alt=""
+                  />
                   <p>
                     {message.message}
                   </p>
                 </div>
-              </div>     
-                }
+              }
+              {message.sender === "ChatGPT" &&
+                <div className="answer">
+                  <img
+                    src="https://connectme-html.themeyn.com/images/avatar/bot-1.jpg"
+                    className="avtBot"
+                    alt=""
+                  />
+                  <div className="content_answer">
+                    <p>
+                      {message.message}
+                    </p>
+                  </div>
+                </div>
+              }
             </div>
           );
         })}
-
+        {option && 
+          <ul className="send-option">
+            <li onClick={handlePay}>Gửi tiền</li>
+            <li>Lịch sử giao dịch</li>
+            {/* <li></li>
+            <li></li>
+            <li></li> */}
+          </ul>
+        }
         <div className="send">
           {/* <form onSubmit={handleSend}> */}
 
@@ -195,6 +269,18 @@ const SAi = styled.div`
     p {
       font-size: 17px;
       color: #475569;
+      ul {
+        li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          img {
+            width: 48px;
+
+          }
+        }
+      }
+    
     }
     .avt {
       width: 35px;
@@ -270,6 +356,21 @@ const SAi = styled.div`
         }
       }
     }
+  }
+  .send-option {
+    position: absolute;
+    background-color: #eff6ff;
+    width: 40%;
+    bottom: 15%;
+    left: 44%;
+    li {
+      padding: 10px;
+
+      &:nth-child(odd) {
+       background-color: #ffffff;
+      }
+    }
+
   }
   .send {
     width: 40%;

@@ -4,10 +4,10 @@ import Message from '../message/Message'
 import { ChatContext } from '../../context/ChatContext'
 import { Timestamp, arrayUnion, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase/config'
-import { message } from 'antd'
 import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
+
 
 const Chat = () => {
   const {data} = useContext(ChatContext)
@@ -15,7 +15,6 @@ const Chat = () => {
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
-  const [AiData, setAiData] = useState([]);
   const fileSelect = useRef()
 
   useEffect(() => {
@@ -133,100 +132,150 @@ const Chat = () => {
           {messages.map(m => (
             <Message key={m.id} mess={m} />
           ))}
-          {/* <div className="chat__body-reply-item incoming">
-            <div className="image">
-              <img src="https://connectme-html.themeyn.com/images/avatar/1.jpg" alt="" />
-            </div>
-            <div className="content">
-              <div className="content-call">
-                <div className="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-video3" viewBox="0 0 16 16">
-                                                        <path d="M14 9.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-6 5.7c0 .8.8.8.8.8h6.4s.8 0 .8-.8-.8-3.2-4-3.2-4 2.4-4 3.2Z"></path>
-                                                        <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5.243c.122-.326.295-.668.526-1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v7.81c.353.23.656.496.91.783.059-.187.09-.386.09-.593V4a2 2 0 0 0-2-2H2Z"></path>
-                                                    </svg>
-                </div>
-                <div className="text">
-                  <h6>Outgoing Audio Call</h6>
-                  <span>03:29 PM</span>
-                </div>
-              </div>
-              <div className="content-tool"></div>
-            </div>
-          </div>
-          
-          <div className="chat__body-reply-item outcoming">
-            <div className="content">
-              <div className="content-call">
-                <div className="icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-video3" viewBox="0 0 16 16">
-                                                        <path d="M14 9.5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm-6 5.7c0 .8.8.8.8.8h6.4s.8 0 .8-.8-.8-3.2-4-3.2-4 2.4-4 3.2Z"></path>
-                                                        <path d="M2 2a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h5.243c.122-.326.295-.668.526-1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v7.81c.353.23.656.496.91.783.059-.187.09-.386.09-.593V4a2 2 0 0 0-2-2H2Z"></path>
-                                                    </svg>
-                </div>
-                <div className="text">
-                  <h6>Outgoing Audio Call</h6>
-                  <span>03:29 PM</span>
-                </div>
-              </div>
-              <div className="content-tool"></div>
-            </div>
-          </div>
 
-          <div className="chat__body-reply-item outcoming">
-            <div className="content">
-              <div className="content-text">
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.Do you know which App or feature it will require to set up.Do you know which App or feature it will require to set up.
-              </div>
-            </div>
-          </div>
-
-          <div className="chat__body-reply-item outcoming">
-            <div className="content">
-              <div className="content-text">
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.
-              Do you know which App or feature it will require to set up.Do you know which App or feature it will require to set up.Do you know which App or feature it will require to set up.
-              </div>
-            </div>
-          </div>
-          <div className="chat__body-reply-time">
-            May 10, 2022, 11:14 AM
-          </div>
-          <div className="chat__body-reply-item outcoming">
-            <div className="content">
-              <div className="content-media">
-                <a href="" className='thumb'>
-                  <img src="https://connectme-html.themeyn.com/images/gallery/chat/1.jpg" alt="" />
-                </a>
-                <a href="" className='thumb'>
-                  <img src="https://connectme-html.themeyn.com/images/gallery/chat/1.jpg" alt="" />
-                </a>
-                <a href="" className='thumb'>
-                  <img src="https://connectme-html.themeyn.com/images/gallery/chat/1.jpg" alt="" />
-                </a>
-                <a href="" className='thumb'>
-                  <img src="https://connectme-html.themeyn.com/images/gallery/chat/1.jpg" alt="" />
-                </a>
-              </div>
-            </div>
-          </div> */}
         </div>
       </div>
 
       <div className="chat__bottom">
         <ul className="chat__bottom-left">
             <li>
-              <button>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 576 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm48 160H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zM96 336c0-8.8 7.2-16 16-16H464c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16zM376 160h80c13.3 0 24 10.7 24 24v48c0 13.3-10.7 24-24 24H376c-13.3 0-24-10.7-24-24V184c0-13.3 10.7-24 24-24z"/></svg>
+              <button onClick={() => setShow(!show)} className='threeButton' type="button" class="btn btn-primary" id="primary" data-toggle="modal" data-target="#exampleModalCenter">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 576 512"><path d="M64 64C28.7 64 0 92.7 0 128V384c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128c0-35.3-28.7-64-64-64H64zm48 160H272c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zM96 336c0-8.8 7.2-16 16-16H464c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16zM376 160h80c13.3 0 24 10.7 24 24v48c0 13.3-10.7 24-24 24H376c-13.3 0-24-10.7-24-24V184c0-13.3 10.7-24 24-24z"/></svg>
               </button>
+
+              {
+                show && 
+                <div  class="modal fade show" style={{display: 'block'}} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Transfer Acount</h5>
+                    <button onClick={() => setShow(!show)} type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  {
+                    link ?
+                    <>
+                    {
+                      !confirm?
+                      <>
+                      
+                        <div class="modal-body">
+
+                        <div className='remainder'>
+                          <h5>
+                            Remainder: 
+                          </h5>
+                          <p>1.000.000 VND</p>
+                        </div>
+
+                        <div className="item">
+                          <input placeholder='Amount' type='text' required />
+                          <textarea placeholder='Transfer Content'/>
+                        </div>
+                        
+                        </div>
+                        <div class="modal-footer">
+                          <button onClick={() => {
+                            setLink(!link)
+                            setShow(!show)}} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          <button type="button" onClick={() => setConfirm(!confirm)} class="btn btn-primary" id="upload" 
+                          >Transfer</button>
+                        </div>
+                      </>
+                      :
+                      <>
+                        <div class="modal-body">
+
+                        <div className='remainder'>
+
+                        </div>
+
+                        <table className='table table-striped'>
+
+                            <tbody>
+                              <tr>
+                                <th scope="row">Source account</th>
+                                <td>0012030000</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Target account</th>
+                                <td>1222224249</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Beneficiary</th>
+                                <td>Anh Hoang</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Amount</th>
+                                <td>100.000</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Fee transfer</th>
+                                <td>0</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">Content</th>
+                                <td>Hehe</td>
+                              </tr>
+                            </tbody>
+
+                            
+                        </table>
+                        
+                        </div>
+                        <div class="modal-footer">
+                          <div className='total'>
+                              <p>Total</p>
+                              <p>100.000</p>
+                          </div>
+                          <button onClick={() => {
+                            setConfirm(!confirm)
+                            }} type="button" class="btn btn-secondary">Back</button>
+                          <button type="button" class="btn btn-primary" id="upload" 
+                          >Confirm</button>
+                        </div>
+                      </>
+                    }
+                      
+                    </>
+                    :
+                    <>
+                    <div class="modal-body">
+                      <h5>You have not linked your Viettel Money account!</h5>
+                      <div className="item">
+                        <input placeholder='Your account number' style={{width: '100%'}} required/>
+                        <Camera />
+                        <button style={{width:'160px', height:'40px', border: 'none', borderRadius:'5px', backgroundColor: '#007bff', color: 'white'}}  onClick={handleCapture}>Take Register Photo</button>
+                        <Canvas image={image} />
+                        
+                        
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button onClick={() => {
+                        setImage(null)
+                        setShow(!show)}} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary" id="upload" 
+                      onClick={() =>  {
+                        setImage(null)
+                        setLink(!link)}}
+                      >Transfer</button>
+                  </div>
+                    </>
+                  }
+                  
+                </div>
+              </div>
+            </div>
+            }
             </li>
+
+
             <li>
 
-                <button onClick={() => fileSelect.current.click()}>
+                <button className='threeButton' onClick={() => fileSelect.current.click()}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
                                           <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
                                           <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A.505.505 0 0 1 1 12.5v-9a.5.5 0 0 1 .5-.5h13z"></path>
@@ -235,7 +284,7 @@ const Chat = () => {
       
             </li>
             <li>
-              <button>
+              <button className='threeButton'>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
                                         <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
                                         <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A.505.505 0 0 1 1 12.5v-9a.5.5 0 0 1 .5-.5h13z"></path>

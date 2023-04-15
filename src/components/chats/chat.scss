@@ -169,10 +169,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      // flex: 1;
       justify-content: flex-start;
       li {
-        button {
+        .threeButton {
           display: flex;
           align-items: center;
           justify-content: center;
@@ -182,6 +181,56 @@
           border: none;
           border-radius: 50%;
           background: #e2e8f0;
+        }
+        .modal-footer{
+          .total{
+            display: flex;
+            gap: 2rem;
+            position: absolute;
+            left: 10%;
+            top: 90%;
+          }
+        }
+        .modal-body{
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          gap: 1.5rem;
+          .remainder{
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            p{
+              margin-bottom: 3px;
+            }
+          }
+          .bill{
+            display: flex;
+            gap: 10rem;
+            p{
+              font-size: 20px;
+            }
+          }
+          .item{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            
+            input{
+              border-radius: 10px;
+              padding-left: 20px;
+              font-size: 20px;
+              width: 150%;
+            }
+            textarea{
+              border-radius: 10px;
+              padding-left: 20px;
+              font-size: 20px;
+              width: 150%;
+            }
+          }
         }
       }
     }

@@ -94,6 +94,7 @@ const Aside = () => {
 
   const handleChangeUser = (u) => {
     dispatch({ type: "CHANGE_USER", payload: u })
+    console.log();
   };
 
   return (
@@ -173,7 +174,7 @@ const Aside = () => {
               })}
             </ul>
             <ul className="aside__list">
-              {Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
+              { chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
                 return (
                   <li className="aside__item">
                     <Chat user={chat[1].userInfo} handleSelect = {()=> handleChangeUser(chat[1].userInfo)} lastMesage = {chat[1].lastMessage?.text} time= {chat[1].lastMessage?.date?.seconds} />

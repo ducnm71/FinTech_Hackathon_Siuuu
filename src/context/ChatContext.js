@@ -23,8 +23,17 @@ export const ChatContextProvider = ({ children }) => {
             currentUser.uid > action.payload.uid
               ? currentUser.uid + action.payload.uid
               : action.payload.uid + currentUser.uid,
+          payment: false
         };
-
+      case "CHANGE_USER_PAYMENT":
+        return {
+          user: action.payload,
+          chatId:
+            currentUser.uid > action.payload.uid
+              ? currentUser.uid + action.payload.uid
+              : action.payload.uid + currentUser.uid,
+          payment: true
+        };
       default:
         return state;
     }
