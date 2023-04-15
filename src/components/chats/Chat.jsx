@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react'
 import './chat.scss'
 import Message from '../message/Message'
 import { ChatContext } from '../../context/ChatContext'
-import { Timestamp, arrayUnion, doc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { Timestamp, arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase/config'
 import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
@@ -10,19 +10,46 @@ import { v4 as uuid } from 'uuid';
 import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
 import { TransactionContext } from '../../context/TransactionContext'
+import axios from 'axios'
+import { set } from 'lodash'
 
 const Chat = () => {
   const { data } = useContext(ChatContext)
+  console.log(data);
   const { currentUser } = useContext(AuthContext)
+  // console.log(currentUser);
+  const [card, setCard] = useState('')
+  const [cardUser, setCardUser] = useState('')
+  useEffect(() => {
+    const getUser = async () => {
+        const res = await getDoc(doc(db, "users", currentUser.uid));
+        console.log('hehe');
+        setCard(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
+    }
+
+    currentAccount && getUser()
+}, [])
+
+  
+  useEffect(()=> {
+    const getUser = async () => {
+      const res = await getDoc(doc(db, "users", data.user.uid));
+      console.log('hehe');
+      setCardUser(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
+  }
+
+  currentAccount && getUser()
+  },[data])
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
-
+  const [Result, setResult] = useState(false)
   const [link, setLink] = useState(false)
   const [show, setShow] = useState(data.payment)
   const [image, setImage] = useState(null);
   const [confirm, setConfirm] = useState(false)
   const [newImage, setNewImage] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const { connectWallet, currentAccount, sendTransaction } = useContext(TransactionContext)
   const [values, setValues] = useState({
     addressTo: '',
@@ -37,9 +64,10 @@ const Chat = () => {
 
     e.preventDefault();
     console.log(values)
+    setValues({...values, addressTo: cardUser})
     if (!values.addressTo || !values.amount || !values.message) return;
 
-    sendTransaction(values);
+    sendTransaction({values, setIsLoading});
 
   }
   const handleCapture = async () => {
@@ -54,6 +82,22 @@ const Chat = () => {
     setNewImage(canvas.toDataURL())
     // setImage(null)
   };
+  const handleFaceIO = async () => {
+    console.log(newImage);
+
+    // fetch('http://localhost:5000/api/init_face', {
+    fetch('http://localhost:5000/api/is_image_valid', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image_data: newImage })
+    })
+      .then(response => response.json())
+      .then(data => console.log(data));
+    setImage(null)
+    setLink(!link)
+  }
 
   console.log(newImage);
   const fileSelect = useRef()
@@ -67,6 +111,14 @@ const Chat = () => {
     };
   }, [data.chatId]);
   const handleSend = async () => {
+    axios.get(`http://localhost:3001/api/findclassifier/${text}`)
+      .then((res) => {
+        const result = res.data.includes("transfer")
+        if (result) {
+          setResult(!Result)
+
+        }
+      })
     if (img) {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
@@ -177,6 +229,16 @@ const Chat = () => {
       </div>
 
       <div className="chat__bottom">
+          {
+            Result&& 
+            <div className='hoichuyentien'>
+              <p>May muon chuyen tien ak</p>
+              <div className='hoi'>
+                <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
+                <button type="button" class="btn btn-primary">Yes</button>
+              </div>
+            </div>
+          }
         <ul className="chat__bottom-left">
           <li>
             <button onClick={() => setShow(!show)} className='threeButton' type="button" class="btn btn-primary" id="primary" data-toggle="modal" data-target="#exampleModalCenter">
@@ -184,8 +246,9 @@ const Chat = () => {
             </button>
 
             {
+
               show &&
-              <div class="modal fade show" style={{ display: 'block' }} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal fade" style={{ display: 'block' }} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -221,7 +284,7 @@ const Chat = () => {
                                     setLink(!link)
                                     setShow(!show)
                                   }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  <button type="button" onClick={handleSubmit} class="btn btn-primary" id="upload"
+                                  <button type="button"  onClick={handleSubmit} class="btn btn-primary" id="upload"
                                   >Transfer</button>
                                 </div>
                               </>
@@ -284,19 +347,26 @@ const Chat = () => {
                         :
                         <>
                           <div class="modal-body">
-                            <h5>You have not linked your Viettel Money account!</h5>
+                          {
+                            !currentAccount?<h5 style={{color: 'red'}}>You have not linked your Viettel Money account!</h5>
+                              : <h5 style={{color: 'green'}}>Link your Viettel Money account succussfully!</h5>
+                          }  
+                          
                             <div className="item">
                               {!currentAccount &&
                                 (
-                                  <button type="button" id="login-button" onClick={connectWallet}>
+                                  <button type="button" class="btn btn-primary" id="login-button" onClick={() => {
+                                    connectWallet({
+                                      currentUser, card
+                                    })
+                                    }}>
                                     Connect wallet
                                   </button>
                                 )
                               }
-                              <input placeholder='Your account number' name="addressTo" style={{ width: '100%' }} required onChange={(e) => handleChange(e)} />
                               <Camera />
                               <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
-                              <Canvas image={image} />
+                              {image&&<img  src={newImage} alt=''/>}
 
 
                             </div>
@@ -307,11 +377,8 @@ const Chat = () => {
                               setShow(!show)
                             }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-primary" id="upload"
-                              onClick={() => {
-                                setImage(null)
-                                setLink(!link)
-                              }}
-                            >Transfer</button>
+                              onClick={handleFaceIO}
+                            >Register</button>
                           </div>
                         </>
                     }
@@ -342,15 +409,9 @@ const Chat = () => {
             </button>
 
           </li>
-          <li>
-            <button>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-image" viewBox="0 0 16 16">
-                <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"></path>
-                <path d="M1.5 2A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm13 1a.5.5 0 0 1 .5.5v6l-3.775-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12v.54A.505.505 0 0 1 1 12.5v-9a.5.5 0 0 1 .5-.5h13z"></path>
-              </svg>
-            </button>
-          </li>
+
         </ul>
+
         <div className="chat__bottom-right">
           <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
           <input type="file" id='file' ref={fileSelect} onChange={(e) => setImg(e.target.files[0])} style={{ display: 'none' }} />

@@ -1,25 +1,28 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ethers } from "ethers";
 
 import { contractABI, contractAddress } from "../utils/APIRoutes";
-
+import { doc, getDoc, updateDoc } from "@firebase/firestore";
+import { db } from "../firebase/config";
+import { AuthContext } from "./AuthContext";
 export const TransactionContext = React.createContext();
-
 const { ethereum } = window;
 
 const createEthereumContract = () => {
     const provider = new ethers.providers.Web3Provider(ethereum);
     const signer = provider.getSigner();
     const transactionsContract = new ethers.Contract(contractAddress, contractABI, signer);
-
+    
     return transactionsContract;
 };
 
+
 export const TransactionsProvider = ({ children }) => {
     const [currentAccount, setCurrentAccount] = useState("");
+    const [currentUser, setCurrentUser] = useState(null)
     const [formData, setformData] = useState({ addressTo: "", amount: "", message: "" });
-    const [isLoading, setIsLoading] = useState(false);
+    //const [isLoading, setIsLoading] = useState(false);
     const [transactionCount, setTransactionCount] = useState(localStorage.getItem("transactionCount"));
     const [transactions, setTransactions] = useState([]);
 
@@ -67,15 +70,25 @@ export const TransactionsProvider = ({ children }) => {
             console.log(error);
         }
     };
-
-    const connectWallet = async () => {
+    
+    const connectWallet = async ({currentUser, card}) => {
         try {
             if (!ethereum) return alert("Please install MetaMask.");
 
             const accounts = await ethereum.request({ method: "eth_requestAccounts", });
+                       
+                if(!card) {
 
-            setCurrentAccount(accounts[0]);
-            window.location.reload();
+                    await updateDoc(doc(db, "users", currentUser.uid), {
+                        "numbercard": {
+                            cardNumber: accounts[0]
+                        }
+                    });
+                } 
+                setCurrentAccount(accounts[0]);
+                console.log(accounts[0]);
+                // window.location.reload()
+                
         } catch (error) {
             console.log(error);
 
@@ -83,7 +96,8 @@ export const TransactionsProvider = ({ children }) => {
         }
     };
 
-    const sendTransaction = async (values) => {
+   
+    const sendTransaction = async ({values, setIsLoading}) => {
         try {
             if (ethereum) {
                 const { addressTo, amount, message } = values;
@@ -109,6 +123,7 @@ export const TransactionsProvider = ({ children }) => {
 
                 const transactionsCount = await transactionsContract.getTransactionCount();
                 setTransactionCount(transactionsCount.toNumber());
+                setIsLoading(false)
             }
         } catch (error) {
             console.log(error);

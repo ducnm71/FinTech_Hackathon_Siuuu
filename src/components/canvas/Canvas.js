@@ -9,7 +9,7 @@ const Canvas = ({ image }) => {
   }
 
   return (
-    <canvas ref={canvasRef} width="320" height="240"></canvas>
+    <canvas id='hehe' ref={canvasRef} width="320" height="240"></canvas>
   );
 };
 
