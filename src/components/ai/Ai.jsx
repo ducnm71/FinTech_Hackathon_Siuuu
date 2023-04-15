@@ -130,6 +130,11 @@ const Ai = () => {
 
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
+    if ( e.code === "Enter") {
+      if ( text.length > 0) {
+        setText("")
+      }
+    }
     console.log(messages);
   };
   const [copy, setCopy] = useState(false);
@@ -149,8 +154,8 @@ const Ai = () => {
           {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
             return (
               <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
-                <img src={chat[1].userInfo?.photoURL} alt="" />
                 <p>{chat[1].userInfo?.displayName}</p>
+                <img src={chat[1].userInfo?.photoURL} alt=""  style={{ height: '100px', with: '100px' }}/>
               </li>
             )
           })}

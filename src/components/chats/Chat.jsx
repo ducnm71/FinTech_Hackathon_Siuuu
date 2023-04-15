@@ -116,18 +116,10 @@ const Chat = () => {
   }, [data.chatId]);
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
-<<<<<<< HEAD
-    .then((res) => {
-      const result = res.data.includes("transfer")
-      console.log(result);
-      if(result){
-        setResult(!Result)
-=======
       .then((res) => {
         const result = res.data.includes("transfer")
         if (result) {
           setResult(!Result)
->>>>>>> 7c20fa81abfafa2c7de0660ca47591687d211c5c
 
         }
       })
