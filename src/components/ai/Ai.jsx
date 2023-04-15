@@ -6,14 +6,19 @@ import { db } from "../../firebase/config";
 import { AuthContext } from "../../context/AuthContext";
 import { ChatContext } from "../../context/ChatContext";
 import { useNavigate } from "react-router-dom";
-const API_KEY = "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"
-const systemMessage = {
-  //  Explain things like you're talking to a software professional with 5 years of experience.
-  role: "system",
-  content:
-    "Explain things like you're talking to a software professional with 2 years of experience.",
-};
+const API_KEY = "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"
 const Ai = () => {
+  
+  const [text, setText] = useState("");
+  let contents = "Explain things like you're talking to a software professional with 2 years of experience."
+  if(text.includes('https://shopee.vn')) {
+    contents = 'lấy giá, đánh giá, số lượng bán, lượt thích, lượt bình luận, địa chỉ , giá cao, và giá thấp nhất của sản phẩm này' + text
+  }
+  const systemMessage = {
+    //  Explain things like you're talking to a software professional with 5 years of experience.
+    role: "system",
+    content: contents
+  };
   const [messages, setMessages] = useState([
     {
       message: "Hello, I'm your assistant! Ask me anything!",
@@ -22,7 +27,6 @@ const Ai = () => {
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [text, setText] = useState("");
   const [option, setOption] = useState(false)
   const [chats, setChats] = useState([])
   const { currentUser} = useContext(AuthContext);
@@ -51,6 +55,7 @@ const Ai = () => {
   }, [text])
 
   const handleSend = async (message) => {
+    // 
     const newMessage = {
       message,
       direction: "outgoing",
@@ -78,6 +83,9 @@ const Ai = () => {
       if (messageObject.sender === "ChatGPT") {
         role = "assistant";
       } else {
+        // if(messageObject.message.includes('https://shopee.vn')) {
+        //   messageObject.message = 'lấy giá, đánh giá, số lượng bán, lượt thích, lượt bình luận, địa chỉ , giá cao, và giá thấp nhất của sản phẩm này' + messageObject.message
+        // }
         role = "user";
       }
       return { role: role, content: messageObject.message };
@@ -107,10 +115,21 @@ const Ai = () => {
       })
       .then((data) => {
         console.log(data);
+        if(text.includes('https://shopee.vn')) {
+          data = data?.choices[0].message.content.split('-')
+          console.log(data);
+        }
+        let res = (
+          data.map(item => {
+            return (
+              <p style={{ fontWeight: "bold" }}>{item}</p>
+            )
+          })
+        )
         setMessages([
           ...chatMessages,
           {
-            message: data.choices[0].message.content,
+            message: res,
             sender: "ChatGPT",
           },
         ]);
