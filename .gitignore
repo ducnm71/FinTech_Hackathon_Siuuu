@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 /vntk/node_modules
+.py
 
 # testing
 /coverage

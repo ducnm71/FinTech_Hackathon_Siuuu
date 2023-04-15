@@ -5,13 +5,15 @@ import { ChatContext } from '../../context/ChatContext'
 import { Timestamp, arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db, storage } from '../../firebase/config'
 import { AuthContext } from '../../context/AuthContext'
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
+import { getDownloadURL, ref, uploadBytesResumable, getStorage } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
 import Camera from '../camera/Camera'
 import Canvas from '../canvas/Canvas'
 import { TransactionContext } from '../../context/TransactionContext'
 import axios from 'axios'
-import { set } from 'lodash'
+
+
+
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -21,29 +23,34 @@ const Chat = () => {
   const { data } = useContext(ChatContext)
   console.log(data);
   const { currentUser } = useContext(AuthContext)
-  // console.log(currentUser);
+  //alert(currentUser.email);
   const [card, setCard] = useState('')
   const [cardUser, setCardUser] = useState('')
+
+  const [photoRegistered, setPhotoRegistered] = useState(false)
+
   useEffect(() => {
     const getUser = async () => {
-        const res = await getDoc(doc(db, "users", currentUser.uid));
-        console.log('hehe');
-        setCard(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
+      const res = await getDoc(doc(db, "users", currentUser.uid));
+      console.log(res);
+      console.log('hehe');
+      setPhotoRegistered(res._document.data.value.mapValue.fields.photoAuth.booleanValue)
+      setCard(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
     }
 
     currentAccount && getUser()
-}, [])
+  }, [])
 
-  
-  useEffect(()=> {
+
+  useEffect(() => {
     const getUser = async () => {
       const res = await getDoc(doc(db, "users", data.user.uid));
       console.log('hehe');
       setCardUser(res._document.data.value.mapValue.fields.numbercard.mapValue?.fields.cardNumber.stringValue);
-  }
+    }
 
-  currentAccount && getUser()
-  },[data])
+    currentAccount && getUser()
+  }, [data])
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
@@ -54,24 +61,29 @@ const Chat = () => {
   const [confirm, setConfirm] = useState(false)
   const [newImage, setNewImage] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const { connectWallet, currentAccount, sendTransaction } = useContext(TransactionContext)
   const [values, setValues] = useState({
     addressTo: '',
-    amount: '',
+    amount: 0,
     message: ''
   })
-  const handleChange = (event) => {
-    setValues({ ...values, [event.target.name]: event.target.value });
-    console.log(values)
+  const handleChange =  (event) => {
+    if (event.target.name === 'amount') {
+        setValues({ ...values, amount: (event.target.value /28400000)});
+    }
+    if (event.target.name === 'message') {
+      setValues({ ...values, message: event.target.value });
+    }
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
 
     e.preventDefault();
     console.log(values)
-    setValues({...values, addressTo: cardUser})
+    setValues({ ...values, addressTo: cardUser })
     if (!values.addressTo || !values.amount || !values.message) return;
 
-    sendTransaction({values, setIsLoading});
+    sendTransaction({ values, setIsLoading });
 
   }
   const handleCapture = async () => {
@@ -93,18 +105,48 @@ const Chat = () => {
   const handleFaceIO = async () => {
     console.log(newImage);
 
-    // fetch('http://localhost:5000/api/init_face', {
+    fetch('http://localhost:5000/api/init_face', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ image_data: newImage, email: currentUser.email })
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.valid === true) {
+          updateDoc(doc(db, "users", currentUser.uid), {
+            "photoAuth": true
+          });
+        }
+      });
+    setPhotoRegistered(!photoRegistered);
+    setImage(null)
+    setLink(!link)
+  }
+
+  const handleVerify = async () => {
     fetch('http://localhost:5000/api/is_image_valid', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ image_data: newImage })
+      body: JSON.stringify({ image_data: newImage, email: currentUser.email })
     })
       .then(response => response.json())
-      .then(data => console.log(data));
-    setImage(null)
-    setLink(!link)
+      .then(data => {
+        console.log(data);
+        if (data.valid === false) {
+          setError('Dang nhap that bai')
+          // setConfirm(true)
+          return
+        } else {
+          setImage(null)
+          setLink(!link)
+
+        }
+      });
+
   }
 
   
@@ -121,11 +163,12 @@ const Chat = () => {
   const handleSend = async () => {
     axios.get(`http://localhost:3001/api/findclassifier/${text}`)
       .then((res) => {
-        const result = res.data.includes("transfer")
+        const result = res.data
+        console.log(result)
         if (result) {
-          setResult(!Result)
-        }
-      })
+          setResult(result)
+
+  }})
     if (img) {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
@@ -180,6 +223,7 @@ const Chat = () => {
     setText("");
     setImg(null);
   };
+
   console.log(img);
   return (
     <div className='chat'>
@@ -236,16 +280,35 @@ const Chat = () => {
       </div>
 
       <div className="chat__bottom">
-          {
-            Result&& 
-            <div className='hoichuyentien'>
-              <p>May muon chuyen tien ak</p>
-              <div className='hoi'>
-                <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
-                <button type="button" class="btn btn-primary">Yes</button>
-              </div>
+        {
+          Result == "transfer_money" &&
+          <div className='hoichuyentien'>
+            <p>Bạn muốn chuyển tiền à</p>
+            <div className='hoi'>
+              <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
+              <button type="button" onClick={() => {
+                setLink(!link)
+                setShow(!show)}} class="btn btn-primary">Yes</button>
+
+              
             </div>
-          } 
+          </div>
+        }
+        {
+          Result == "transfer_history" &&
+          <div className='hoichuyentien'>
+            <p>Bạn muốn xem lịch sử chuyển tiền à</p>
+            <div className='hoi'>
+              <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
+              <button type="button" onClick={() => {
+                setLink(!link)
+                setShow(!show)}} class="btn btn-primary">Yes</button>
+
+              
+            </div>
+          </div>
+        }
+
         <ul className="chat__bottom-left">
           <li>
             <button onClick={() => setShow(!show)} className='threeButton' type="button" class="btn btn-primary" id="primary" data-toggle="modal" data-target="#exampleModalCenter">
@@ -281,8 +344,13 @@ const Chat = () => {
                                   </div>
 
                                   <div className="item">
-                                    <input placeholder='Amount' name="amount" min='0.0001' type='text' required onChange={(e) => handleChange(e)} />
-                                    <textarea placeholder='Transfer Content' name="message" onChange={(e) => handleChange(e)} />
+                                    <div style={{display: 'flex', gap: '2rem', marginTop:'-20px'}}>
+                                      <h5>Receiver Acount:</h5>
+                                      <p>{data.user.displayName}</p>
+                                    </div>
+                                    <input value={cardUser}/>
+                                    <input placeholder='Amount' name="amount" min='0.0001' type='text' required onChange={handleChange} />
+                                    <textarea placeholder='Transfer Content' name="message" onChange={handleChange} />
                                   </div>
 
                                 </div>
@@ -290,8 +358,9 @@ const Chat = () => {
                                   <button onClick={() => {
                                     setLink(!link)
                                     setShow(!show)
+                                    setResult(!Result)
                                   }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                  <button type="button"  onClick={handleSubmit} class="btn btn-primary" id="upload"
+                                  <button type="button" onClick={handleSubmit} class="btn btn-primary" id="upload"
                                   >Transfer</button>
                                 </div>
                               </>
@@ -305,11 +374,11 @@ const Chat = () => {
                         :
                         <>
                           <div class="modal-body">
-                          {
-                            !currentAccount?<h5 style={{color: 'red'}}>You have not linked your Viettel Money account!</h5>
-                              : <h5 style={{color: 'green'}}>Link your Viettel Money account succussfully!</h5>
-                          }  
-                          
+                            {
+                              !currentAccount ? <h5 style={{ color: 'red' }}>You have not linked your Viettel Money account!</h5>
+                                : <h5 style={{ color: 'green' }}>Link your Viettel Money account succussfully!</h5>
+                            }
+
                             <div className="item">
                               {!currentAccount &&
                                 (
@@ -317,15 +386,26 @@ const Chat = () => {
                                     connectWallet({
                                       currentUser, card
                                     })
-                                    }}>
+                                  }}>
                                     Connect wallet
                                   </button>
                                 )
                               }
-                              <Camera />
-                              <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
-                              {image&&<img  src={newImage} alt=''/>}
+                              <Camera show={show} />
+                              {!photoRegistered &&
+                                (
+                                  <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Take Register Photo</button>
+                                )
+                              }
+                              {photoRegistered &&
+                                (
+                                  <button style={{ width: '160px', height: '40px', border: 'none', borderRadius: '5px', backgroundColor: '#007bff', color: 'white' }} onClick={handleCapture}>Verify Identity</button>
+                                )
+                              }
 
+                              {image && <img src={newImage} alt='' />}
+
+                              {error && <p>{error}</p>}
 
                             </div>
                           </div>
@@ -334,9 +414,22 @@ const Chat = () => {
                               setImage(null)
                               setShow(!show)
                             }} type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="upload"
-                              onClick={handleFaceIO}
-                            >Register</button>
+
+                            {image && !photoRegistered &&
+                              (
+                                <button type="button" class="btn btn-primary" id="upload"
+                                  onClick={handleFaceIO}
+                                >Register</button>
+                              )
+                            }
+                            {image && photoRegistered &&
+                              (
+                                <button type="button" class="btn btn-primary" id="upload"
+                                  onClick={() => handleVerify()}
+                                >Verify</button>
+                              )
+                            }
+
                           </div>
                         </>
                     }

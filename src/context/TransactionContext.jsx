@@ -101,10 +101,8 @@ export const TransactionsProvider = ({ children }) => {
         try {
             if (ethereum) {
                 const { addressTo, amount, message } = values;
-                console.log(values)
                 const transactionsContract = createEthereumContract();
-                const parsedAmount = ethers.utils.parseEther(amount);
-
+                const parsedAmount = ethers.utils.parseEther(amount.toFixed(5).toString());
                 await ethereum.request({
                     method: "eth_sendTransaction",
                     params: [{

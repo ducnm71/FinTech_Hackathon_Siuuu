@@ -9,14 +9,20 @@ import { useNavigate } from "react-router-dom";
 import { TransactionContext } from '../../context/TransactionContext'
 import { shortenAddress } from '../../utils/shortenAddress'
 import { IoMdSend } from "react-icons/io";
-const API_KEY = "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"
-const systemMessage = {
-  //  Explain things like you're talking to a software professional with 5 years of experience.
-  role: "system",
-  content:
-    "Explain things like you're talking to a software professional with 2 years of experience.",
-};
+const API_KEY = "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"
+
 const Ai = () => {
+  
+  const [text, setText] = useState("");
+  let contents = "Explain things like you're talking to a software professional with 2 years of experience."
+  if(text.includes('https://shopee.vn')) {
+    contents = 'lấy giá, đánh giá, số lượng bán, lượt thích, lượt bình luận, địa chỉ , giá cao, và giá thấp nhất của sản phẩm này' + text
+  }
+  const systemMessage = {
+    //  Explain things like you're talking to a software professional with 5 years of experience.
+    role: "system",
+    content: contents
+  };
   const [messages, setMessages] = useState([
     {
       message: "Hello, I'm your assistant! Ask me anything!",
@@ -25,7 +31,6 @@ const Ai = () => {
     },
   ]);
   const [isTyping, setIsTyping] = useState(false);
-  const [text, setText] = useState("");
   const [option, setOption] = useState(false)
   const [chats, setChats] = useState([])
   const { currentUser } = useContext(AuthContext);
@@ -57,6 +62,7 @@ const Ai = () => {
   }, [text])
 
   const handleSend = async (message) => {
+    // 
     const newMessage = {
       message,
       direction: "outgoing",
@@ -84,6 +90,9 @@ const Ai = () => {
       if (messageObject.sender === "ChatGPT") {
         role = "assistant";
       } else {
+        // if(messageObject.message.includes('https://shopee.vn')) {
+        //   messageObject.message = 'lấy giá, đánh giá, số lượng bán, lượt thích, lượt bình luận, địa chỉ , giá cao, và giá thấp nhất của sản phẩm này' + messageObject.message
+        // }
         role = "user";
       }
       return { role: role, content: messageObject.message };
@@ -113,10 +122,21 @@ const Ai = () => {
       })
       .then((data) => {
         console.log(data);
+        if(text.includes('https://shopee.vn')) {
+          data = data?.choices[0].message.content.split('-')
+          console.log(data);
+        }
+        let res = (
+          data.map(item => {
+            return (
+              <p style={{ fontWeight: "bold" }}>{item}</p>
+            )
+          })
+        )
         setMessages([
           ...chatMessages,
           {
-            message: data.choices[0].message.content,
+            message: res,
             sender: "ChatGPT",
           },
         ]);
@@ -130,8 +150,10 @@ const Ai = () => {
 
   const handleKey = (e) => {
     e.code === "Enter" && handleSend(text);
-    if(e.code==="Enter"){
-      setText("");
+    if ( e.code === "Enter") {
+      if ( text.length > 0) {
+        setText("")
+      }
     }
     console.log(messages);
   };
@@ -152,8 +174,8 @@ const Ai = () => {
           {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
             return (
               <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
-                <img src={chat[1].userInfo?.photoURL} alt="" />
                 <p>{chat[1].userInfo?.displayName}</p>
+                <img src={chat[1].userInfo?.photoURL} alt=""  style={{ height: '100px', with: '100px' }}/>
               </li>
             )
           })}
@@ -178,9 +200,6 @@ const Ai = () => {
       <>
         <ul>
           <li>Lịch sử giao dịch</li>
-          {chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
-
-            return (
               <table class="table table-striped">
                 <thead>
                   <tr>
@@ -206,8 +225,6 @@ const Ai = () => {
                   }
                 </tbody>
               </table>
-            )
-          })}
         </ul>
       </>
     )
