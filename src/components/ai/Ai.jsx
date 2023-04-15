@@ -9,7 +9,7 @@ import code5 from "../../image/chat-bot/code5.png";
 import code6 from "../../image/chat-bot/code6.png";
 import { set } from "lodash";
 import { message } from "antd";
-const API_KEY = "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"
+const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",

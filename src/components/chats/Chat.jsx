@@ -9,14 +9,15 @@ import { AuthContext } from '../../context/AuthContext'
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage'
 import { v4 as uuid } from 'uuid';
 
-
 const Chat = () => {
   const {data} = useContext(ChatContext)
   const {currentUser } = useContext(AuthContext)
   const [text, setText] = useState('')
   const [img, setImg] = useState(null)
   const [messages, setMessages] = useState([]);
+  const [AiData, setAiData] = useState([]);
   const fileSelect = useRef()
+
   useEffect(() => {
     const unSub = onSnapshot(doc(db, "chats", data.chatId), (doc) => {
       doc.exists() && setMessages(doc.data().messages);
@@ -31,7 +32,6 @@ const Chat = () => {
       const storageRef = ref(storage, uuid());
       console.log('hehe');
       const uploadTask = uploadBytesResumable(storageRef, img);
-
       uploadTask.on(
         (error) => {
           //TODO:Handle Error
@@ -49,6 +49,7 @@ const Chat = () => {
             });
           });
           console.log('sucees');
+          
         }
       );
     } else {
