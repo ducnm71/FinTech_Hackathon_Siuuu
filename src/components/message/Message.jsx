@@ -48,7 +48,32 @@ const Message = ({mess}) => {
                   <img src="https://connectme-html.themeyn.com/images/gallery/chat/1.jpg" alt="" />
                 </a> */}
               </div>
-              }
+            }
+            {mess.bill !== undefined && 
+              <div className='content-bill'>
+                <table class="table table-striped table-dark" style={{borderRadius: '10px', overflow: 'hidden'}}>
+                <tbody>
+                    <tr>
+                      <th scope="row">Bill Code</th>
+                      <td style={{wordWrap: 'break-word'}}>{mess.bill.hash}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Date</th>
+                      <td>{new Date((mess.date.seconds)*1000).toLocaleString()}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Amount</th>
+                      <td>{mess.bill.amout*28400000} VND</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Content Transfer</th>
+                      <td>{mess.bill.message}</td>
+                    </tr>
+                </tbody>
+
+                </table>
+              </div>
+            }
               <div className="content-tool"></div>
             </div>
     </div>

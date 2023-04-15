@@ -97,7 +97,7 @@ export const TransactionsProvider = ({ children }) => {
     };
 
    
-    const sendTransaction = async ({values, setIsLoading}) => {
+    const sendTransaction = async ({values, setIsLoading, handleBill}) => {
         try {
             if (ethereum) {
                 const { addressTo, amount, message } = values;
@@ -121,6 +121,7 @@ export const TransactionsProvider = ({ children }) => {
 
                 const transactionsCount = await transactionsContract.getTransactionCount();
                 setTransactionCount(transactionsCount.toNumber());
+                handleBill(transactionHash.hash, amount, message)
                 setIsLoading(false)
             }
         } catch (error) {
@@ -132,6 +133,7 @@ export const TransactionsProvider = ({ children }) => {
     useEffect(() => {
         checkIfWalletIsConnect();
     }, []);
+
     return (
         <TransactionContext.Provider value={{ connectWallet, currentAccount, sendTransaction, transactions }}>
             {children}

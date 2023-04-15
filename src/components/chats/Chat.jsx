@@ -79,9 +79,25 @@ const Chat = () => {
     setValues({ ...values, addressTo: cardUser })
     if (!values.addressTo || !values.amount || !values.message) return;
 
-    sendTransaction({ values, setIsLoading });
+    sendTransaction({ values, setIsLoading, handleBill });
 
   }
+
+  const handleBill = async (hash, amout, message) => {
+    await updateDoc(doc(db, "chats", data.chatId), {
+      messages: arrayUnion({
+        id: uuid(),
+        bill: {
+          hash,
+          amout,
+          message
+        },
+        senderId: currentUser.uid,
+        date: Timestamp.now(),
+      }),
+    });
+  }
+
   const handleCapture = async () => {
     const canvas = document.createElement('canvas');
     canvas.width = 320;
