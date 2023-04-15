@@ -253,7 +253,7 @@ const SAi = styled.div`
   /* flex: 2; */
   height: calc(100vh - 80px);
   .content {
-    flex: 3;
+    flex: 4;
     overflow: hidden;
     overflow-y: scroll;
     scroll-behavior: inherit;

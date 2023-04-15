@@ -248,7 +248,7 @@ const Chat = () => {
             {
 
               show &&
-              <div class="modal fade" style={{ display: 'block' }} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal fade show" style={{ display: 'block' }} id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
@@ -290,56 +290,7 @@ const Chat = () => {
                               </>
                               :
                               <>
-                                <div class="modal-body">
-
-                                  <div className='remainder'>
-
-                                  </div>
-
-                                  <table className='table table-striped'>
-
-                                    <tbody>
-                                      <tr>
-                                        <th scope="row">Source account</th>
-                                        <td>0012030000</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Target account</th>
-                                        <td>1222224249</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Beneficiary</th>
-                                        <td>Anh Hoang</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Amount</th>
-                                        <td>100.000</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Fee transfer</th>
-                                        <td>0</td>
-                                      </tr>
-                                      <tr>
-                                        <th scope="row">Content</th>
-                                        <td>Hehe</td>
-                                      </tr>
-                                    </tbody>
-
-
-                                  </table>
-
-                                </div>
-                                <div class="modal-footer">
-                                  <div className='total'>
-                                    <p>Total</p>
-                                    <p>100.000</p>
-                                  </div>
-                                  <button onClick={() => {
-                                    setConfirm(!confirm)
-                                  }} type="button" class="btn btn-secondary">Back</button>
-                                  <button type="button" class="btn btn-primary" id="upload"
-                                  >Confirm</button>
-                                </div>
+                                
                               </>
                           }
 
