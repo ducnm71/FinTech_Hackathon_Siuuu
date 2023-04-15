@@ -147,7 +147,10 @@ const submitFormRegist = async (e) =>{
                 displayName,
                 email,
                 photoURL: downloadURL,
-                keywords: generateKeywords(displayName)
+                keywords: generateKeywords(displayName),
+                photoAuth: '',
+                balance: '',
+                numbercard: '',
               });
   
               //create empty user chats on firestore

@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import SideBarAI from "./sideBarAI";
 import styled from "styled-components";
-
-const API_KEY = "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"
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../firebase/config";
+import { AuthContext } from "../../context/AuthContext";
+import { ChatContext } from "../../context/ChatContext";
+import { useNavigate } from "react-router-dom";
+const API_KEY = "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"
 const systemMessage = {
   //  Explain things like you're talking to a software professional with 5 years of experience.
   role: "system",
@@ -19,6 +23,32 @@ const Ai = () => {
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [text, setText] = useState("");
+  const [option, setOption] = useState(false)
+  const [chats, setChats] = useState([])
+  const { currentUser} = useContext(AuthContext);
+  const { data, dispatch } = useContext(ChatContext);
+  console.log(currentUser);
+  useEffect(() => {
+    const getChats = () => {
+      // console.log(currentUser + 'haha');
+      const unsub = onSnapshot(doc(db, "userChats", currentUser.uid), (doc) => {
+        console.log(doc.data())
+        setChats(doc.data())
+      })
+
+      return () => {
+        unsub();
+      }
+    }
+    
+    currentUser.uid && getChats()
+    
+  }, [currentUser.uid])
+
+  useEffect(() => {
+    if(text === '/') setOption(true)
+    else setOption(false)
+  }, [text])
 
   const handleSend = async (message) => {
     const newMessage = {
@@ -87,16 +117,59 @@ const Ai = () => {
         setIsTyping(false);
       });
   }
-  const handleChange = (e) => {
-    setText(e.target.value)
+
+  const handleChangeUser = (u) => {
+    dispatch({ type: "CHANGE_USER_PAYMENT", payload: u })
+  };
+
+
+  const handleKey = (e) => {
+    e.code === "Enter" && handleSend(text);
+    console.log(messages);
+  };
+  const [copy, setCopy] = useState(false);
+
+  const handlePay = () => {
+    setMessages([...messages, {
+      message: 'Chuyển tiền',
+      sender: "user",
+    }])
+
+    setText('')
+
+    let messGpT = (
+      <>
+        <ul>
+          <li>Người dùng trong danh bạ</li>
+        { chats !== undefined && Object.entries(chats)?.sort((a, b) => b[1].date - a[1].date).map(chat => {
+                return (
+                  <li className="aside__item" onClick={() => handleNavigate(chat[1].userInfo)}>
+                    <img src={chat[1].userInfo?.photoURL} alt="" />
+                    <p>{chat[1].userInfo?.displayName}</p>
+                  </li>
+                )
+              })}
+        </ul>
+      </>
+    )
+
+    setMessages([...messages, {
+      message: messGpT,
+      sender: 'ChatGPT'
+    }])
   }
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    handleSend(text)
-    if (text.length > 0) {
-      setText("")
-    }
+
+  const handleCopy = () => {
+    setTimeout(() => {
+      setCopy(true);
+    }, 1000);
+  };
+  const navigate = useNavigate()
+  const handleNavigate = (user) => {
+    handleChangeUser(user)
+    navigate('/')
   }
+
   return (
     <SAi>
       <SideBarAI />
@@ -134,28 +207,37 @@ const Ai = () => {
             </div>
           );
         })}
-
+        {option && 
+          <ul className="send-option">
+            <li onClick={handlePay}>Gửi tiền</li>
+            <li>Lịch sử giao dịch</li>
+            {/* <li></li>
+            <li></li>
+            <li></li> */}
+          </ul>
+        }
         <div className="send">
-          <form onSubmit={(e) => handleSubmit(e)}>
+          {/* <form onSubmit={handleSend}> */}
 
-            <input
-              type="text"
-              required
-              value={text}
-              placeholder="Search here"
-              onChange={(e) => handleChange(e)}
-            />
-            <button>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-              >
-                <path d="m21.426 11.095-17-8A.999.999 0 0 0 3.03 4.242L4.969 12 3.03 19.758a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81zM5.481 18.197l.839-3.357L12 12 6.32 9.16l-.839-3.357L18.651 12l-13.17 6.197z"></path>
-              </svg>
-            </button>
-          </form>
+          <input
+            type="text"
+            required
+            value={text}
+            placeholder="Search here"
+            onChange={(e) => setText(e.target.value)}
+            onKeyDown={handleKey}
+          />
+          <button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+            >
+              <path d="m21.426 11.095-17-8A.999.999 0 0 0 3.03 4.242L4.969 12 3.03 19.758a.998.998 0 0 0 1.396 1.147l17-8a1 1 0 0 0 0-1.81zM5.481 18.197l.839-3.357L12 12 6.32 9.16l-.839-3.357L18.651 12l-13.17 6.197z"></path>
+            </svg>
+          </button>
+          {/* </form> */}
         </div>
       </div>
     </SAi>
@@ -184,6 +266,18 @@ const SAi = styled.div`
     p {
       font-size: 17px;
       color: #475569;
+      ul {
+        li {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          img {
+            width: 48px;
+
+          }
+        }
+      }
+    
     }
     .avt {
       width: 35px;
@@ -259,6 +353,21 @@ const SAi = styled.div`
         }
       }
     }
+  }
+  .send-option {
+    position: absolute;
+    background-color: #eff6ff;
+    width: 40%;
+    bottom: 15%;
+    left: 44%;
+    li {
+      padding: 10px;
+
+      &:nth-child(odd) {
+       background-color: #ffffff;
+      }
+    }
+
   }
   .send {
     width: 40%;
