@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { TransactionContext } from '../../context/TransactionContext'
 import { shortenAddress } from '../../utils/shortenAddress'
 import { IoMdSend } from "react-icons/io";
-const API_KEY = "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"
+const API_KEY = "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"
 
 const Ai = () => {
   

@@ -297,28 +297,30 @@ const Chat = () => {
 
       <div className="chat__bottom">
         {
-          Result == "transfer_money" &&
+          Result === "transfer_money" &&
           <div className='hoichuyentien'>
             <p>Bạn muốn chuyển tiền à</p>
             <div className='hoi'>
               <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
               <button type="button" onClick={() => {
                 setLink(!link)
-                setShow(!show)}} class="btn btn-primary">Yes</button>
+                setShow(!show)
+                setResult(!Result)}} class="btn btn-primary">Yes</button>
 
               
             </div>
           </div>
         }
         {
-          Result == "transfer_history" &&
+          Result === "transfer_history" &&
           <div className='hoichuyentien'>
             <p>Bạn muốn xem lịch sử chuyển tiền à</p>
             <div className='hoi'>
               <button type="button" class="btn btn-secondary" onClick={() => setResult(!Result)}>No</button>
               <button type="button" onClick={() => {
                 setLink(!link)
-                setShow(!show)}} class="btn btn-primary">Yes</button>
+                setShow(!show)
+                setResult(!Result)}} class="btn btn-primary">Yes</button>
 
               
             </div>
